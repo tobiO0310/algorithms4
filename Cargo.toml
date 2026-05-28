@@ -3,9 +3,10 @@ name = "algorithms4"
 description = "A rust implementation of the 4th edition of Algorithms by R. Sedgewick and K. Wayne."
 version = "0.0.1"
 edition = "2024"
+rust-version = "1.85.0"
 
 readme = "README.md"
-license-file = "LICENSE"
+license = "MIT"
 repository = "https://github.com/tobiO0310/algorithms4"
 keywords = ["algorithms", "algs4"]
 
