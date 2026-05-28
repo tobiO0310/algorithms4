@@ -108,11 +108,6 @@ impl<T> Stack<T> {
             _boo: PhantomData,
         }
     }
-
-    /// Consumes this stack into an iterator
-    pub fn into_iter(self) -> IntoIter<T> {
-        IntoIter { item: self }
-    }
 }
 
 extend_singly_linked_list!(Stack<T>; Link<T>);

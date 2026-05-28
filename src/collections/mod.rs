@@ -65,10 +65,6 @@ macro_rules! extend_singly_linked_list {
             fn eq(&self, other: &Self) -> bool {
                 self.len() == other.len() && self.iter().eq(other)
             }
-
-            fn ne(&self, other: &Self) -> bool {
-                self.len() != other.len() || self.iter().ne(other)
-            }
         }
         impl<T: Eq> Eq for $t {}
         impl<T: PartialOrd> PartialOrd for $t {
@@ -160,7 +156,7 @@ macro_rules! extend_singly_linked_list {
             type IntoIter = IntoIter<T>;
 
             fn into_iter(self) -> Self::IntoIter {
-                self.into_iter()
+                IntoIter { item: self }
             }
         }
         impl<'a, T> IntoIterator for &'a $t {

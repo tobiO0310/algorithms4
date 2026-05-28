@@ -42,7 +42,7 @@ impl<T> Queue<T> {
 
     /// Indicates whether the queue is empty
     pub fn is_empty(&self) -> bool {
-        self.front == None
+        self.front.is_none()
     }
 
     /// The length of the queue
@@ -81,7 +81,7 @@ impl<T> Queue<T> {
                 let elem = boxed_node.elem;
 
                 self.front = boxed_node.next;
-                if self.front == None {
+                if self.front.is_none() {
                     self.back = None; // if front is none, list is empty
                 }
                 self.len -= 1;
@@ -122,11 +122,6 @@ impl<T> Queue<T> {
             len: self.len,
             _boo: PhantomData,
         }
-    }
-
-    /// Consumes this queue into an iterator
-    pub fn into_iter(self) -> IntoIter<T> {
-        IntoIter { item: self }
     }
 }
 
