@@ -1,13 +1,15 @@
 # Algorithms, 4th edition
 
 ## TL;DR
-This is a rust implementation of the algorithms described in
+This is a rust implementation of the data structures and algorithms described in
 the 4th edition of Algorithms by R. Sedgewick and K. Wayne.
 
 ## What is this?
 
-This is my attempt at recreating all the algorithms in the book Algorithms,
+This is my attempt at recreating all the algorithms and data structures in the book Algorithms,
 4th edition by Robert Sedgewick and Kevin Wayne!
+Data structures may have additional or changed fields or methods as to follow Rust programming style.
+`.size()` changed to `.len()`, and so on.
 
 ## Why is this made?
 
