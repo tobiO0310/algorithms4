@@ -1,0 +1,9 @@
+# File system
+.DS_Store
+desktop.ini
+
+# Cargo
+.cargo
+debug
+target
+rust-ice-*.txt

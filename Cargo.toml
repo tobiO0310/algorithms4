@@ -1,0 +1,13 @@
+[package]
+name = "algorithms4"
+description = "A rust implementation of the 4th edition of Algorithms by R. Sedgewick and K. Wayne."
+version = "0.1.0"
+edition = "2024"
+
+readme = "README.md"
+license-file = "LICENSE"
+repository = "https://github.com/tobiO0310/algorithms4"
+keywords = ["algorithms", "algs4"]
+
+[dependencies]
+num = "0.4.3"
