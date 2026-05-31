@@ -1,14 +1,19 @@
-name: CI
-on: [push, pull_request]
+name: Cargo Deny
+
+on: [ push, pull_request ]
+
+
 jobs:
   cargo-deny:
-    runs-on: ubuntu-22.04
+    name: Cargo Deny
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         checks:
           - advisories
           - bans licenses sources
 
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     # Prevent sudden announcement of a new advisory from failing ci:
     continue-on-error: ${{ matrix.checks == 'advisories' }}
 
