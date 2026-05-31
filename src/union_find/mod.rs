@@ -46,7 +46,7 @@ pub trait UnionFind {
     /// ## Errors
     ///
     /// Returns an error if either `p` or `q` is bigger than or equal to `size`
-    fn union(&mut self, p: usize, q: usize) -> Result<(), &'static str>;
+    fn union(&mut self, p: usize, q: usize) -> Result<(), String>;
     /// Returns the representative of `p`.
     ///
     /// The representative should be equal for any connected objects.

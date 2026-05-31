@@ -22,7 +22,7 @@ impl UnionFind for QuickUnionWPC {
     /// See [UnionFind::union] for details.
     ///
     /// The running time is directly tied and equal to [QuickUnion::find].
-    fn union(&mut self, p: usize, q: usize) -> Result<(), &'static str> {
+    fn union(&mut self, p: usize, q: usize) -> Result<(), String> {
         let p_root = self.find(p).ok_or("could not find pid in QuickFind")?;
         let q_root = self.find(q).ok_or("could not find qid in QuickFind")?;
 

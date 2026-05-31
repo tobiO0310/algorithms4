@@ -22,7 +22,7 @@ impl UnionFind for QuickFind {
     /// See [UnionFind::union] for details.
     ///
     /// This runs in `O(n)` time
-    fn union(&mut self, p: usize, q: usize) -> Result<(), &'static str> {
+    fn union(&mut self, p: usize, q: usize) -> Result<(), String> {
         let pid = self.find(p).ok_or("could not find pid in QuickFind")?;
         let qid = self.find(q).ok_or("could not find qid in QuickFind")?;
 
