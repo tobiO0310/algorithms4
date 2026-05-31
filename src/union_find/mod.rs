@@ -6,6 +6,7 @@ mod quick_union;
 mod quick_union_with_path_compression;
 mod weighted_quick_union;
 mod weighted_quick_union_with_path_compression;
+mod dynamic;
 
 pub use quick_find::QuickFind;
 pub use quick_union::QuickUnion;
@@ -74,7 +75,7 @@ pub trait UnionFind {
 macro_rules! generate_tests {
     ($t:ident) => {
         #[cfg(test)]
-        mod tests {
+        mod uf_tests {
             use super::*;
 
             #[test]
