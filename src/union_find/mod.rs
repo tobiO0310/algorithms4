@@ -1,13 +1,14 @@
 //! This module compiles all the different variants of
 //! the Union-Find data structure given in chapter 1.5
 
+mod dynamic;
 mod quick_find;
 mod quick_union;
 mod quick_union_with_path_compression;
 mod weighted_quick_union;
 mod weighted_quick_union_with_path_compression;
-mod dynamic;
 
+pub use dynamic::DynamicUnionFind;
 pub use quick_find::QuickFind;
 pub use quick_union::QuickUnion;
 pub use quick_union_with_path_compression::QuickUnionWPC;
