@@ -1,13 +1,13 @@
 use crate::union_find::{generate_tests, UnionFind};
 
 /// Quick-Union implemented as Weighted Quick Union with Path Compression.
-pub struct WQUWithPC {
+pub struct WeightedQuickUnionWPC {
     id: Vec<usize>,
     size: Vec<usize>,
     count: usize,
 }
 
-impl UnionFind for WQUWithPC {
+impl UnionFind for WeightedQuickUnionWPC {
     fn new(size: usize) -> Self {
         assert!(size > 0);
 
@@ -23,7 +23,7 @@ impl UnionFind for WQUWithPC {
 
     /// See [UnionFind::union] for details.
     ///
-    /// The running time is directly tied and equal to [WQUWithPC::find].
+    /// The running time is directly tied and equal to [WeightedQuickUnionWPC::find].
     fn union(&mut self, p: usize, q: usize) -> Result<(), &'static str> {
         let p_root = self.find(p).ok_or("could not find pid in QuickFind")?;
         let q_root = self.find(q).ok_or("could not find qid in QuickFind")?;
@@ -60,4 +60,4 @@ impl UnionFind for WQUWithPC {
     }
 }
 
-generate_tests!(WQUWithPC);
+generate_tests!(WeightedQuickUnionWPC);

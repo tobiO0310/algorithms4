@@ -3,13 +3,15 @@
 
 mod quick_find;
 mod quick_union;
+mod quick_union_with_path_compression;
 mod weighted_quick_union;
 mod weighted_quick_union_with_path_compression;
 
 pub use quick_find::QuickFind;
 pub use quick_union::QuickUnion;
+pub use quick_union_with_path_compression::QuickUnionWPC;
 pub use weighted_quick_union::WeightedQuickUnion;
-pub use weighted_quick_union_with_path_compression::WQUWithPC;
+pub use weighted_quick_union_with_path_compression::WeightedQuickUnionWPC;
 
 /// Union-Find is a solution to the dynamic connectivity problem.
 ///
