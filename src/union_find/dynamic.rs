@@ -61,7 +61,7 @@ impl UnionFind for DynamicUnionFind {
 
     /// See [UnionFind::find] for details.
     ///
-    /// Time is documented in [WeightedQuickUnionWPC]'s [WeightedQuickUnionWPC::find] method
+    /// Time is documented in [super::WeightedQuickUnionWPC]'s [super::WeightedQuickUnionWPC::find] method
     fn find(&mut self, p: usize) -> Option<usize> {
         find!(pc p, self.id)
     }

@@ -21,7 +21,7 @@ impl UnionFind for QuickUnionWPC {
 
     /// See [UnionFind::union] for details.
     ///
-    /// The running time is directly tied and equal to [QuickUnion::find].
+    /// The running time is directly tied and equal to [super::QuickUnion::find].
     fn union(&mut self, p: usize, q: usize) -> Result<(), String> {
         let (p_root, q_root) = get_roots!(p, q, self);
 
