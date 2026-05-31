@@ -3,7 +3,7 @@ name = "algorithms4"
 description = "A rust implementation of the 4th edition of Algorithms by R. Sedgewick and K. Wayne."
 version = "0.0.1"
 edition = "2024"
-rust-version = "1.85.0"
+rust-version = "1.88.0"
 
 readme = "README.md"
 license = "MIT"
@@ -12,3 +12,11 @@ keywords = ["algorithms", "algs4"]
 
 [dependencies]
 num = "0.4.3"
+
+[dev-dependencies]
+criterion = "0.7.0"
+rand = "0.10.1"
+
+[[bench]]
+name = "union_find"
+harness = false

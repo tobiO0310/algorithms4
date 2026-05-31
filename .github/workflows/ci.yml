@@ -1,11 +1,19 @@
 name: Cargo Build & Test
 
-on: [push, pull_request]
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+
 
 jobs:
   latest_deps:
     name: Latest Dependencies
     runs-on: ubuntu-latest
+    if: ${{ !github.event.pull_request.draft }}
     continue-on-error: true
     env:
       CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS: allow
@@ -16,9 +24,19 @@ jobs:
       - run: cargo build --verbose
       - run: cargo test --verbose
 
+  msrv:
+    name: Rust version checking
+    runs-on: ubuntu-latest
+    if: ${{ !github.event.pull_request.draft }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: taiki-e/install-action@cargo-hack
+      - run: cargo hack check --rust-version --workspace --all-targets --ignore-private
+
   build_and_test:
     name: Rust project - latest
     runs-on: ubuntu-latest
+    if: ${{ !github.event.pull_request.draft }}
     strategy:
       matrix:
         toolchain:
