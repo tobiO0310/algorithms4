@@ -137,4 +137,37 @@ macro_rules! generate_tests {
     };
 }
 
+macro_rules! find {
+    ($p:ident, $id:expr) => {{
+        let mut p = $p;
+        while p != *$id.get(p)? {
+            p = $id[p];
+        }
+        Some(p)
+    }};
+    (pc $p:ident, $id:expr) => {{
+        let mut p = $p;
+        while p != *$id.get(p)? {
+            $id[p] = *$id.get(*$id.get(p)?)?; // path compression
+            p = $id[p];
+        }
+        Some(p)
+    }};
+}
+
+macro_rules! get_roots {
+    ($p:ident, $q:ident, $self:ident) => {{
+        let p_root = $self.find($p).ok_or("could not find pid in QuickFind")?;
+        let q_root = $self.find($q).ok_or("could not find qid in QuickFind")?;
+
+        if p_root == q_root {
+            return Ok(()); // nothing to do lol, p and q are connected already
+        };
+
+        (p_root, q_root)
+    }};
+}
+
+use find;
 use generate_tests;
+use get_roots;

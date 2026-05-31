@@ -1,4 +1,4 @@
-use crate::union_find::{generate_tests, UnionFind};
+use crate::union_find::{UnionFind, generate_tests};
 
 /// Quick-Union implemented as Quick Find.
 pub struct QuickFind {

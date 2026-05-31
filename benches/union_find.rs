@@ -3,7 +3,7 @@ use std::{hint::black_box, ops::Range};
 use algorithms4::union_find::{
     QuickFind, QuickUnion, QuickUnionWPC, UnionFind, WeightedQuickUnion, WeightedQuickUnionWPC,
 };
-use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
+use criterion::{BenchmarkId, Criterion, Throughput, criterion_group, criterion_main};
 use num::PrimInt;
 use rand::prelude::*;
 

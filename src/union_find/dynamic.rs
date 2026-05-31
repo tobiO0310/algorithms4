@@ -1,4 +1,4 @@
-use crate::union_find::{generate_tests, UnionFind};
+use crate::union_find::{UnionFind, find, generate_tests};
 
 /// Quick-Union implemented as Weighted Quick Union with Path Compression,
 /// but this implementation allows adding new vertices if need be.
@@ -61,17 +61,9 @@ impl UnionFind for DynamicUnionFind {
 
     /// See [UnionFind::find] for details.
     ///
-    /// This runs in `O(log* n)` time, where `log*` is the iterated logarithm.
-    /// For any `n` in the range `(65.536, 2^65.536]` `lg*(n) = 5`.
-    /// Therefore, it can reasonbly be handled as if it's `O(1)`.
-    fn find(&mut self, mut p: usize) -> Option<usize> {
-        while p != *self.id.get(p)? {
-            // the actual path compression :))
-            // basically sets p's "parent" to p's parent's parent
-            self.id[p] = *self.id.get(*self.id.get(p)?)?;
-            p = self.id[p];
-        }
-        Some(p)
+    /// Time is documented in [WeightedQuickUnionWPC]'s [WeightedQuickUnionWPC::find] method
+    fn find(&mut self, p: usize) -> Option<usize> {
+        find!(pc p, self.id)
     }
 }
 

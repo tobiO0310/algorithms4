@@ -1,4 +1,4 @@
-use crate::union_find::{generate_tests, UnionFind};
+use crate::union_find::{UnionFind, find, generate_tests, get_roots};
 
 /// Quick-Union implemented as Weighted Quick Union with Path Compression.
 pub struct WeightedQuickUnionWPC {
@@ -25,12 +25,7 @@ impl UnionFind for WeightedQuickUnionWPC {
     ///
     /// The running time is directly tied and equal to [WeightedQuickUnionWPC::find].
     fn union(&mut self, p: usize, q: usize) -> Result<(), String> {
-        let p_root = self.find(p).ok_or("could not find pid in QuickFind")?;
-        let q_root = self.find(q).ok_or("could not find qid in QuickFind")?;
-
-        if p_root == q_root {
-            return Ok(()); // nothing to do lol, p and q are connected already
-        };
+        let (p_root, q_root) = get_roots!(p, q, self);
 
         if self.size[p_root] < self.size[q_root] {
             self.id[p_root] = q_root;
@@ -49,14 +44,8 @@ impl UnionFind for WeightedQuickUnionWPC {
     /// This runs in `O(log* n)` time, where `log*` is the iterated logarithm.
     /// For any `n` in the range `(65.536, 2^65.536]` `lg*(n) = 5`.
     /// Therefore, it can reasonbly be handled as if it's `O(1)`.
-    fn find(&mut self, mut p: usize) -> Option<usize> {
-        while p != *self.id.get(p)? {
-            // the actual path compression :))
-            // basically sets p's "parent" to p's parent's parent
-            self.id[p] = *self.id.get(*self.id.get(p)?)?;
-            p = self.id[p];
-        }
-        Some(p)
+    fn find(&mut self, p: usize) -> Option<usize> {
+        find!(pc p, self.id)
     }
 }
 

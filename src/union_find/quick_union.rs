@@ -1,4 +1,4 @@
-use crate::union_find::{generate_tests, UnionFind};
+use crate::union_find::{UnionFind, find, generate_tests, get_roots};
 
 /// Quick-Union implemented as Quick Union.
 pub struct QuickUnion {
@@ -23,12 +23,7 @@ impl UnionFind for QuickUnion {
     ///
     /// The running time is directly tied and equal to [QuickUnion::find].
     fn union(&mut self, p: usize, q: usize) -> Result<(), String> {
-        let p_root = self.find(p).ok_or("could not find pid in QuickFind")?;
-        let q_root = self.find(q).ok_or("could not find qid in QuickFind")?;
-
-        if p_root == q_root {
-            return Ok(()); // nothing to do lol, p and q are connected already
-        };
+        let (p_root, q_root) = get_roots!(p, q, self);
 
         self.id[p_root] = q_root;
         self.count -= 1;
@@ -39,11 +34,8 @@ impl UnionFind for QuickUnion {
     /// See [UnionFind::find] for details.
     ///
     /// This runs in `O(n)` time
-    fn find(&mut self, mut p: usize) -> Option<usize> {
-        while p != *self.id.get(p)? {
-            p = self.id[p];
-        }
-        Some(p)
+    fn find(&mut self, p: usize) -> Option<usize> {
+        find!(p, self.id)
     }
 }
 
