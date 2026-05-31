@@ -1,8 +1,8 @@
 //! This module holds the most basic collections as described in chapter 1.3 of the book.
 
 pub mod bag;
-pub mod stack;
 pub mod queue;
+pub mod stack;
 
 pub use bag::Bag;
 pub use stack::Stack;

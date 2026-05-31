@@ -1,6 +1,6 @@
 //! This module contains the code to create a simple bag
 
-use std::collections::{linked_list, LinkedList};
+use std::collections::{LinkedList, linked_list};
 
 /// A bag is a collection without the ability to delete from it.
 /// Its purpose is to allows collection and iteration.
