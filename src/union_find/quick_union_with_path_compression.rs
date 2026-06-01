@@ -1,4 +1,7 @@
-use crate::union_find::{UnionFind, find, generate_tests, get_roots};
+use crate::{
+    UnionFindError,
+    union_find::{UnionFind, find, generate_tests, get_roots},
+};
 
 /// Quick-Union implemented as Quick Union with Path Compression.
 pub struct QuickUnionWPC {
@@ -22,7 +25,7 @@ impl UnionFind for QuickUnionWPC {
     /// See [UnionFind::union] for details.
     ///
     /// The running time is directly tied and equal to [super::QuickUnion::find].
-    fn union(&mut self, p: usize, q: usize) -> Result<(), String> {
+    fn union(&mut self, p: usize, q: usize) -> Result<(), UnionFindError> {
         let (p_root, q_root) = get_roots!(p, q, self);
 
         self.id[p_root] = q_root;

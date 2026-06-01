@@ -1,4 +1,7 @@
-use crate::union_find::{UnionFind, find, generate_tests, get_roots};
+use crate::{
+    UnionFindError,
+    union_find::{UnionFind, find, generate_tests, get_roots},
+};
 
 /// Quick-Union implemented as Weighted Quick Union with Path Compression,
 /// but this implementation allows adding new vertices if need be.
@@ -7,7 +10,6 @@ use crate::union_find::{UnionFind, find, generate_tests, get_roots};
 pub struct DynamicUnionFind {
     id: Vec<usize>,
     size: Vec<usize>,
-    n: usize,
     count: usize,
 }
 
@@ -23,7 +25,6 @@ impl UnionFind for DynamicUnionFind {
             id: (0..size).collect(),
             size: vec![1; size],
             count: size,
-            n: size,
         }
     }
     fn count(&self) -> usize {
@@ -33,13 +34,7 @@ impl UnionFind for DynamicUnionFind {
     /// See [UnionFind::union] for details.
     ///
     /// The running time is directly tied and equal to [DynamicUnionFind::find].
-    fn union(&mut self, p: usize, q: usize) -> Result<(), String> {
-        if p >= self.n {
-            return Err(format!("p {} is too high", p));
-        }
-        if q >= self.n {
-            return Err(format!("q {} is too low", q));
-        }
+    fn union(&mut self, p: usize, q: usize) -> Result<(), UnionFindError> {
         let (p_root, q_root) = get_roots!(p, q, self);
 
         if self.size[p_root] < self.size[q_root] {
@@ -68,10 +63,9 @@ impl DynamicUnionFind {
     /// ## Panics
     /// This function panics if the number of vertices ever grows above/equal [usize]
     pub fn new_site(&mut self) -> usize {
-        assert!(self.n < usize::MAX);
+        assert!(self.id.len() < usize::MAX);
 
-        let id = self.n;
-        self.n += 1;
+        let id = self.id.len();
         self.id.push(id);
         self.size.push(1);
         self.count += 1;
@@ -81,7 +75,7 @@ impl DynamicUnionFind {
 
     /// Returns the amount of vertices currently active,
     pub fn vertices(&self) -> usize {
-        self.n
+        self.id.len()
     }
 }
 
