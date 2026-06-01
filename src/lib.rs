@@ -4,6 +4,7 @@
 #![warn(missing_docs)]
 
 pub mod collections;
+pub mod sorting;
 pub mod union_find;
 
 pub use union_find::*;
