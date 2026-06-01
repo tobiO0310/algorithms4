@@ -158,16 +158,16 @@ mod tests {
 
     macro_rules! test_sort {
         ($($name:ident),*) => ($(
-            paste::paste! {
+            pastey::paste! {
                 #[test]
-                fn [< $name _works >]() {
+                fn [<$name _works>]() {
                     let mut arr = vec![4, 5, 2, 6, 3, 1];
                     $name(&mut arr);
                     assert_eq!(arr, vec![1, 2, 3, 4, 5, 6]);
                 }
 
                 #[test]
-                fn [< $name _big_works >]() {
+                fn [<$name _big_works>]() {
                     let mut rand = rand::rng();
 
                     let mut arr = vec![0; 100];
