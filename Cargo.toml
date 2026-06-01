@@ -10,8 +10,8 @@ license = "MIT"
 repository = "https://github.com/tobiO0310/algorithms4"
 keywords = ["algorithms", "algs4"]
 
-[dependencies]
-num = "0.4.3"
+[profile.release]
+lto = "thin"
 
 [dev-dependencies]
 criterion = "0.7.0"
