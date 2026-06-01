@@ -1,4 +1,4 @@
-use crate::union_find::{UnionFind, find, generate_tests};
+use crate::union_find::{UnionFind, find, generate_tests, get_roots};
 
 /// Quick-Union implemented as Weighted Quick Union with Path Compression,
 /// but this implementation allows adding new vertices if need be.
@@ -40,12 +40,7 @@ impl UnionFind for DynamicUnionFind {
         if q >= self.n {
             return Err(format!("q {} is too low", q));
         }
-        let p_root = self.find(p).ok_or("could not find pid in QuickFind")?;
-        let q_root = self.find(q).ok_or("could not find qid in QuickFind")?;
-
-        if p_root == q_root {
-            return Ok(()); // nothing to do lol, p and q are connected already
-        };
+        let (p_root, q_root) = get_roots!(p, q, self);
 
         if self.size[p_root] < self.size[q_root] {
             self.id[p_root] = q_root;
