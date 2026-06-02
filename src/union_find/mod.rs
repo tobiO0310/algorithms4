@@ -79,7 +79,7 @@ pub trait UnionFind {
     /// Returns `true` if `p` is connected to `q`
     ///
     /// See [UnionFind] and [UnionFind::find] for mathematical definitions
-    #[inline] // connected is just `find(p) == find(q)` and they both exist
+    #[inline] // connected is just testing `find(p) == find(q)` and that they're both `<= n`
     fn connected(&mut self, p: usize, q: usize) -> bool {
         matches!((self.find(p), self.find(q)), (Some(p_root), Some(q_root)) if p_root == q_root)
     }

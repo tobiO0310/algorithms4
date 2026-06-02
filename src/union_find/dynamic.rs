@@ -60,8 +60,12 @@ impl UnionFind for DynamicUnionFind {
 impl DynamicUnionFind {
     /// Adds a new vertex to the union find object/graph
     ///
+    /// At the risk that the implementation changes,
+    /// please utilize the returned id for the new vertex.
+    ///
     /// ## Panics
     /// This function panics if the number of vertices ever grows above/equal [usize]
+    #[must_use]
     pub fn new_site(&mut self) -> usize {
         assert!(self.id.len() < usize::MAX);
 
@@ -73,7 +77,7 @@ impl DynamicUnionFind {
         id
     }
 
-    /// Returns the amount of vertices currently active,
+    /// Returns the amount of vertices currently active
     pub fn vertices(&self) -> usize {
         self.id.len()
     }
@@ -110,8 +114,9 @@ mod tests {
         assert_eq!(uf.find(1), Some(0));
         assert_eq!(uf.find(2), None);
 
-        for _ in 3..=200 {
-            uf.new_site();
+        for i in 3..=200 {
+            let j = uf.new_site();
+            assert_eq!(i - 1, j);
         }
 
         assert_eq!(uf.vertices(), 200);
