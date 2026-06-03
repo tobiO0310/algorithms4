@@ -1,4 +1,4 @@
-use super::is_sorted;
+use super::{is_sorted, is_whole_sorted};
 
 /// Sorts the array in-place, using elementary sort.
 ///
@@ -16,9 +16,9 @@ pub fn insertion_sort<T: Ord>(arr: &mut [T]) {
             j -= 1;
         }
 
-        debug_assert!(is_sorted(arr, 0, i));
+        debug_assert!(is_sorted(arr, 0..i));
     }
-    debug_assert!(is_sorted(arr, 0, n - 1));
+    debug_assert!(is_whole_sorted(arr));
 }
 
 /// Sorts the array in-place, using an optimized version of elementary sort.
@@ -55,7 +55,7 @@ pub fn insertion_sort_x<T: Clone + Ord>(arr: &mut [T]) {
         arr[j] = v;
     }
 
-    debug_assert!(is_sorted(arr, 0, n - 1));
+    debug_assert!(is_whole_sorted(arr));
 }
 
 /// Sorts the array in-place, using binary search and insertion sort with half exchanges.
@@ -87,7 +87,7 @@ pub fn binary_insertion_sort<T: Clone + Ord>(arr: &mut [T]) {
         arr[lo] = v;
     }
 
-    debug_assert!(is_sorted(arr, 0, n - 1));
+    debug_assert!(is_whole_sorted(arr));
 }
 
 /// Sorts the array in-place, using selection sort.
@@ -106,9 +106,9 @@ pub fn selection_sort<T: Ord>(arr: &mut [T]) {
             }
         }
         arr.swap(i, min);
-        debug_assert!(is_sorted(arr, 0, i));
+        debug_assert!(is_sorted(arr, 0..=i));
     }
-    debug_assert!(is_sorted(arr, 0, n - 1));
+    debug_assert!(is_whole_sorted(arr));
 }
 
 /// Sorts the array in-place, using Shellsort with
@@ -134,20 +134,20 @@ pub fn shell_sort<T: Ord>(arr: &mut [T]) {
             let mut j = i;
             while j >= increment && arr[j] < arr[j - increment] {
                 arr.swap(j, j - increment);
-                j -= 1;
+                j -= increment;
             }
         }
         if cfg!(debug_assertions) {
             // only run in non-release state
             for i in increment..n {
                 if arr[i] < arr[i - increment] {
-                    panic!("did not sort correctly")
+                    panic!("did not sort correctly {}", increment)
                 }
             }
         }
         increment /= 3;
     }
-    debug_assert!(is_sorted(arr, 0, n - 1));
+    debug_assert!(is_whole_sorted(arr));
 }
 
 #[cfg(test)]
@@ -155,36 +155,6 @@ mod tests {
     use rand::prelude::*;
 
     use super::*;
-
-    macro_rules! test_sort {
-        ($($name:ident),*) => ($(
-            pastey::paste! {
-                #[test]
-                fn [<$name _works>]() {
-                    let mut arr = vec![4, 5, 2, 6, 3, 1];
-                    $name(&mut arr);
-                    assert_eq!(arr, vec![1, 2, 3, 4, 5, 6]);
-                }
-
-                #[test]
-                fn [<$name _big_works>]() {
-                    let mut rand = rand::rng();
-
-                    let mut arr = vec![0; 100];
-                    for item in arr.iter_mut() {
-                        *item = rand.random_range(0..1000);
-                    }
-
-                    let mut clone = arr.to_vec();
-                    clone.sort(); // assume rust's sorting works
-
-                    insertion_sort(&mut arr);
-
-                    assert_eq!(arr, clone);
-                }
-            }
-        )*);
-    }
 
     test_sort!(
         insertion_sort,

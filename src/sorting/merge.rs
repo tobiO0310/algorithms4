@@ -1,8 +1,8 @@
-use crate::sorting::is_sorted;
+use super::{is_sorted, is_whole_sorted};
 
 fn merge<T: Clone + Ord>(arr: &mut [T], aux: &mut [T], lo: usize, mid: usize, hi: usize) {
-    debug_assert!(is_sorted(arr, lo, mid));
-    debug_assert!(is_sorted(arr, mid + 1, hi));
+    debug_assert!(is_sorted(arr, lo..=mid));
+    debug_assert!(is_sorted(arr, (mid + 1)..=hi));
 
     let mut i = lo;
     let mut j = mid + 1;
@@ -25,7 +25,7 @@ fn merge<T: Clone + Ord>(arr: &mut [T], aux: &mut [T], lo: usize, mid: usize, hi
         }
     }
 
-    debug_assert!(is_sorted(arr, lo, hi));
+    debug_assert!(is_sorted(arr, lo..=hi));
 }
 
 fn topdown_sort<T: Clone + Ord>(arr: &mut [T], aux: &mut [T], lo: usize, hi: usize) {
@@ -36,47 +36,6 @@ fn topdown_sort<T: Clone + Ord>(arr: &mut [T], aux: &mut [T], lo: usize, hi: usi
     topdown_sort(arr, aux, lo, mid);
     topdown_sort(arr, aux, mid + 1, hi);
     merge(arr, aux, lo, mid, hi);
-}
-
-/// Sorts the array using top-down mergesort.
-///
-/// In the worst case, this makes &Theta;(<em>n</em> log <em>n</em>) time
-/// to sort any array of length <em>n</em> (assuming comparisons take constant time)
-/// It does between ~ &frac12; <em>n</em> log<sub>2</sub> <em>n</em> and ~ <em>n</em> log<sub>2</sub> <em>n</em> compares.
-///
-/// It is stable and uses &Theta;(<em>n</em>) extra space (not including input array).
-///
-/// ## Notes
-///
-/// This does use recursion, so to avoid stack overflows using [merge_bottom_up_sort] is recommended.
-pub fn merge_top_down_sort<T: Clone + Ord>(arr: &mut [T]) {
-    let mut aux: Vec<T> = arr.to_vec();
-    topdown_sort(arr, &mut aux, 0, arr.len() - 1);
-    debug_assert!(is_sorted(arr, 0, arr.len()));
-}
-
-/// Sorts the array using bottom-up mergesort.
-///
-/// In the worst case, this makes &Theta;(<em>n</em> log <em>n</em>) time
-/// to sort any array of length <em>n</em> (assuming comparisons take constant time)
-/// It does between ~ &frac12; <em>n</em> log<sub>2</sub> <em>n</em> and ~ <em>n</em> log<sub>2</sub> <em>n</em> compares.
-///
-/// It is stable and uses &Theta;(<em>n</em>) extra space (not including input array).
-pub fn merge_bottom_up_sort<T: Clone + Ord>(arr: &mut [T]) {
-    let n = arr.len();
-    let mut aux = arr.to_vec();
-    let mut len = 1;
-    while len <= n {
-        let mut lo = 0;
-        while lo <= n - len {
-            let mid = lo + len - 1;
-            let hi = (lo + len + len - 1).min(n - 1);
-            merge(arr, &mut aux, lo, mid, hi);
-            lo += 2 * len;
-        }
-        len *= 2;
-    }
-    debug_assert!(is_sorted(arr, 0, arr.len()));
 }
 
 fn index_merge<T: Ord>(
@@ -120,18 +79,65 @@ fn index_sort<T: Ord>(arr: &[T], index: &mut [usize], aux: &mut [usize], lo: usi
     index_merge(arr, index, aux, lo, mid, hi);
 }
 
-/// Returns a permutation with elements from the array in a sorted order.
-///
-/// It has the same time and space complexity as [merge_top_down_sort].
-#[must_use] // the result is the reason for calling this LOL
-pub fn index_merge_sort<T: Ord>(arr: &[T]) -> Vec<usize> {
-    let n = arr.len();
-    let mut index = (0..n).collect::<Vec<_>>();
+/// Holds different mergesort implementations
+pub struct MergeSort;
 
-    let mut aux = (0..n).collect::<Vec<_>>();
-    index_sort(arr, &mut index, &mut aux, 0, n - 1);
+impl MergeSort {
+    /// Sorts the array using top-down mergesort.
+    ///
+    /// In the worst case, this makes &Theta;(<em>n</em> log <em>n</em>) time
+    /// to sort any array of length <em>n</em> (with the assumptions that comparisons take constant time)
+    /// It does between ~ &frac12; <em>n</em> log<sub>2</sub> <em>n</em> and ~ <em>n</em> log<sub>2</sub> <em>n</em> compares.
+    ///
+    /// It is stable and uses &Theta;(<em>n</em>) extra space (not including input array).
+    ///
+    /// ## Notes
+    ///
+    /// This does use recursion, so to avoid stack overflows it is recommended
+    /// to use [merge_bottom_up_sort] instead, if mergesort is desired.
+    pub fn top_down_sort<T: Clone + Ord>(arr: &mut [T]) {
+        let mut aux: Vec<T> = arr.to_vec();
+        topdown_sort(arr, &mut aux, 0, arr.len() - 1);
+        debug_assert!(is_whole_sorted(arr));
+    }
 
-    index
+    /// Sorts the array using bottom-up mergesort.
+    ///
+    /// In the worst case, this makes &Theta;(<em>n</em> log <em>n</em>) time
+    /// to sort any array of length <em>n</em> (with the assumptions that comparisons take constant time)
+    /// It does between ~ &frac12; <em>n</em> log<sub>2</sub> <em>n</em> and ~ <em>n</em> log<sub>2</sub> <em>n</em> compares.
+    ///
+    /// It is stable and uses &Theta;(<em>n</em>) extra space (not including input array).
+    pub fn bottom_up_sort<T: Clone + Ord>(arr: &mut [T]) {
+        let n = arr.len();
+        let mut aux = arr.to_vec();
+        let mut len = 1;
+        while len <= n {
+            let mut lo = 0;
+            while lo <= n - len {
+                let mid = lo + len - 1;
+                let hi = (lo + len + len - 1).min(n - 1);
+                merge(arr, &mut aux, lo, mid, hi);
+                lo += 2 * len;
+            }
+            len *= 2;
+        }
+        debug_assert!(is_whole_sorted(arr));
+    }
+
+    /// Returns a permutation with elements from the array in a sorted order.
+    ///
+    /// It has the same time and space complexity as [merge_top_down_sort].
+    #[must_use] // the result is the reason for calling this LOL
+    pub fn index_sort<T: Ord>(arr: &[T]) -> Vec<usize> {
+        let n = arr.len();
+        let mut index = (0..n).collect::<Vec<_>>();
+
+        let mut aux = (0..n).collect::<Vec<_>>();
+        index_sort(arr, &mut index, &mut aux, 0, n - 1);
+
+        index
+    }
 }
 
 #[cfg(test)]
@@ -140,26 +146,15 @@ mod tests {
 
     use super::*;
 
-    #[test]
-    fn single() {
-        let mut arr = vec![1];
-        merge_top_down_sort(&mut arr);
-        assert!(is_sorted(&arr, 0, 1));
-        assert_eq!(arr, vec![1]);
-
-        merge_bottom_up_sort(&mut arr);
-        assert!(is_sorted(&arr, 0, 1));
-        assert_eq!(arr, vec![1]);
+    fn top_down_sort<T: Clone + Ord>(arr: &mut [T]) {
+        MergeSort::top_down_sort(arr)
     }
 
-    #[test]
-    fn pre_sorted() {
-        let mut arr = vec![1, 4, 5, 9, 14, 42];
-        merge_top_down_sort(&mut arr);
-        assert_eq!(arr, vec![1, 4, 5, 9, 14, 42]);
-        merge_bottom_up_sort(&mut arr);
-        assert_eq!(arr, vec![1, 4, 5, 9, 14, 42]);
+    fn bottom_up_sort<T: Clone + Ord>(arr: &mut [T]) {
+        MergeSort::bottom_up_sort(arr)
     }
+
+    test_sort!(top_down_sort, bottom_up_sort);
 
     #[test]
     fn index_sorted() {
@@ -168,7 +163,7 @@ mod tests {
         let mut arr = vec![1, 4, 5, 9, 14, 42];
         arr.shuffle(&mut rand);
         assert_ne!(arr, vec![1, 4, 5, 9, 14, 42]);
-        let sorted = index_merge_sort(&arr)
+        let sorted = MergeSort::index_sort(&arr)
             .iter()
             .map(|&i| arr[i])
             .collect::<Vec<_>>();
