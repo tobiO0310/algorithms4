@@ -88,6 +88,8 @@ macro_rules! test_sort {
 
 mod elementary;
 mod merge;
+mod quick;
 
 pub use elementary::*;
 pub use merge::*;
+pub use quick::*;

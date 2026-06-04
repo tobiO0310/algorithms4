@@ -12,11 +12,11 @@ keywords = ["algorithms", "algs4"]
 
 [dependencies]
 num = "0.4.3"
+rand = "0.10.1"
 
 [dev-dependencies]
 criterion = "0.7.0"
 pastey = { package = "pastey", version = "0.2.3" }
-rand = "0.10.1"
 
 [[bench]]
 name = "union_find"
