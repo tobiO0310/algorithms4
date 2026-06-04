@@ -1,4 +1,4 @@
-use std::{error::Error, io, io::BufRead};
+use std::{error::Error, io::{self, BufRead, StdinLock, Write, stdout}};
 
 use algorithms4::{UnionFind, WeightedQuickUnionWPC};
 use rand::prelude::*;
@@ -27,18 +27,22 @@ fn count(n: usize) -> usize {
     edges
 }
 
+fn get_usize_from_stdin(stdin: &mut StdinLock<'_>) -> Result<usize, String> {
+    let mut buf = String::new();
+    stdin.read_line(&mut buf).map_err(|a|a.to_string())?;
+    buf.trim().parse::<usize>().map_err(|e|e.to_string())
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
     let stdin = io::stdin();
-    let mut lines = stdin.lock().lines();
+    let mut stdin = stdin.lock();
 
-    let n = lines
-        .next()
-        .ok_or("no number of vertices given")??
-        .parse::<usize>()?;
-    let trials = lines
-        .next()
-        .ok_or("no numer of trials given")??
-        .parse::<usize>()?;
+    print!("Please input a number of vertices: ");
+    let _ = stdout().flush();
+    let n = get_usize_from_stdin(&mut stdin)?;
+    print!("Please input a number of trials: ");
+    let _ = stdout().flush();
+    let trials = get_usize_from_stdin(&mut stdin)?;
 
     let mut edges = Vec::with_capacity(trials);
 
