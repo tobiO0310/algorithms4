@@ -1,15 +1,19 @@
-use super::is_sorted;
+use crate::{
+    sorting::is_sorted,
+    utilities::{arithmetic_iter, geometric_iter},
+};
 
-fn merge<T: Clone + Ord>(arr: &mut [T], aux: &mut [T], lo: usize, mid: usize, hi: usize) {
-    debug_assert!(is_sorted(&arr[lo..=mid]));
-    debug_assert!(is_sorted(&arr[(mid + 1)..=hi]));
+fn merge<T: Clone + Ord>(arr: &mut [T], aux: &mut [T], mid: usize) {
+    debug_assert!(is_sorted(&arr[0..=mid]));
+    debug_assert!(is_sorted(&arr[(mid + 1)..arr.len()]));
 
-    let mut i = lo;
+    let mut i = 0;
     let mut j = mid + 1;
+    let hi = arr.len() - 1;
 
-    aux[lo..=hi].clone_from_slice(&arr[lo..=hi]);
+    aux.clone_from_slice(arr);
 
-    for item in arr.iter_mut().take(hi + 1).skip(lo) {
+    for item in arr.iter_mut() {
         if i > mid {
             *item = aux[j].clone();
             j += 1;
@@ -25,17 +29,18 @@ fn merge<T: Clone + Ord>(arr: &mut [T], aux: &mut [T], lo: usize, mid: usize, hi
         }
     }
 
-    debug_assert!(is_sorted(&arr[lo..=hi]));
+    debug_assert!(is_sorted(arr));
 }
 
-fn topdown_sort<T: Clone + Ord>(arr: &mut [T], aux: &mut [T], lo: usize, hi: usize) {
-    if hi <= lo {
+fn topdown_sort<T: Clone + Ord>(arr: &mut [T], aux: &mut [T]) {
+    if arr.len() <= 1 {
         return;
     }
-    let mid = lo + (hi - lo) / 2;
-    topdown_sort(arr, aux, lo, mid);
-    topdown_sort(arr, aux, mid + 1, hi);
-    merge(arr, aux, lo, mid, hi);
+    let mid = (arr.len() - 1) / 2;
+    let hi = arr.len() - 1;
+    topdown_sort(&mut arr[..=mid], &mut aux[..=mid]);
+    topdown_sort(&mut arr[(mid + 1)..=hi], &mut aux[(mid + 1)..=hi]);
+    merge(arr, aux, mid);
 }
 
 fn index_merge<T: Ord>(
@@ -94,10 +99,10 @@ impl MergeSort {
     /// ## Notes
     ///
     /// This does use recursion, so to avoid stack overflows it is recommended
-    /// to use [merge_bottom_up_sort] instead, if mergesort is desired.
+    /// to use [MergeSort::bottom_up_sort] instead, if mergesort is desired.
     pub fn top_down_sort<T: Clone + Ord>(arr: &mut [T]) {
         let mut aux: Vec<T> = arr.to_vec();
-        topdown_sort(arr, &mut aux, 0, arr.len() - 1);
+        topdown_sort(arr, &mut aux);
         debug_assert!(is_sorted(arr));
     }
 
@@ -111,16 +116,12 @@ impl MergeSort {
     pub fn bottom_up_sort<T: Clone + Ord>(arr: &mut [T]) {
         let n = arr.len();
         let mut aux = arr.to_vec();
-        let mut len = 1;
-        while len <= n {
-            let mut lo = 0;
-            while lo <= n - len {
+        for len in geometric_iter(1, 2).take_while(|&len| len < n) {
+            for lo in arithmetic_iter(0, 2 * len).take_while(|&lo| lo < n - len) {
                 let mid = lo + len - 1;
                 let hi = (lo + len + len - 1).min(n - 1);
-                merge(arr, &mut aux, lo, mid, hi);
-                lo += 2 * len;
+                merge(&mut arr[lo..=hi], &mut aux[lo..=hi], mid - lo);
             }
-            len *= 2;
         }
         debug_assert!(is_sorted(arr));
     }
