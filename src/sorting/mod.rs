@@ -10,31 +10,26 @@
 //! # let mut og_sorted_vec = vec.clone();
 //! # og_sorted_vec.sort();
 //! MergeSort::bottom_up_sort(&mut vec);
-//! assert_eq!(vec, og_sorted_vec);
+//! # assert_eq!(vec, og_sorted_vec);
 //! ```
 //!
 //! ## Notes
 //!
-//! A lot of these implementations will have extra code running during a non-release build.
+//! A lot of these implementations will have extra verification code running during a non-release build.
 //! This will contribute to increased running time in non-release builds. The amount depends on sorting algorithm and array size
 
-use std::ops::RangeBounds;
+/// Test if array is actually sorted
+fn is_sorted<T: Ord>(arr: &[T]) -> bool {
+    if arr.len() <= 1 {
+        return true;
+    }
 
-/// Test if array is actually sorted in the given range
-fn is_sorted<T: Ord, R: RangeBounds<usize> + IntoIterator<Item = usize>>(
-    arr: &[T],
-    range: R,
-) -> bool {
-    for i in range.into_iter().skip(1) {
+    for i in 1..arr.len() {
         if arr[i] < arr[i - 1] {
             return false;
         }
     }
     true
-}
-
-fn is_whole_sorted<T: Ord>(arr: &[T]) -> bool {
-    is_sorted(arr, 0..arr.len())
 }
 
 #[cfg(test)]
@@ -45,7 +40,7 @@ macro_rules! test_sort {
                 fn [<$name _works>]() {
                     let mut arr = vec![4, 5, 2, 6, 3, 1];
                     $name(&mut arr);
-                    assert!(is_whole_sorted(&arr));
+                    assert!(is_sorted(&arr));
                     assert_eq!(arr, vec![1, 2, 3, 4, 5, 6]);
                 }
 
@@ -63,7 +58,7 @@ macro_rules! test_sort {
 
                     $name(&mut arr);
 
-                    assert!(is_whole_sorted(&arr));
+                    assert!(is_sorted(&arr));
                     assert_eq!(arr, clone);
                 }
 
@@ -71,7 +66,7 @@ macro_rules! test_sort {
                 fn [<$name _single>]() {
                     let mut arr = vec![1];
                     $name(&mut arr);
-                    assert!(is_whole_sorted(&arr));
+                    assert!(is_sorted(&arr));
                     assert_eq!(arr, vec![1]);
                 }
 
@@ -79,7 +74,7 @@ macro_rules! test_sort {
                 fn [<$name _pre_sorted>]() {
                     let mut arr = vec![1, 4, 5, 9, 14, 42];
                     $name(&mut arr);
-                    assert!(is_whole_sorted(&arr));
+                    assert!(is_sorted(&arr));
                     assert_eq!(arr, vec![1, 4, 5, 9, 14, 42]);
                 }
             }

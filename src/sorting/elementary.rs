@@ -1,4 +1,4 @@
-use super::{is_sorted, is_whole_sorted};
+use super::is_sorted;
 
 /// Sorts the array in-place, using elementary sort.
 ///
@@ -16,9 +16,9 @@ pub fn insertion_sort<T: Ord>(arr: &mut [T]) {
             j -= 1;
         }
 
-        debug_assert!(is_sorted(arr, 0..i));
+        debug_assert!(is_sorted(&arr[0..i]));
     }
-    debug_assert!(is_whole_sorted(arr));
+    debug_assert!(is_sorted(arr));
 }
 
 /// Sorts the array in-place, using an optimized version of elementary sort.
@@ -55,7 +55,7 @@ pub fn insertion_sort_x<T: Clone + Ord>(arr: &mut [T]) {
         arr[j] = v;
     }
 
-    debug_assert!(is_whole_sorted(arr));
+    debug_assert!(is_sorted(arr));
 }
 
 /// Sorts the array in-place, using binary search and insertion sort with half exchanges.
@@ -87,7 +87,7 @@ pub fn binary_insertion_sort<T: Clone + Ord>(arr: &mut [T]) {
         arr[lo] = v;
     }
 
-    debug_assert!(is_whole_sorted(arr));
+    debug_assert!(is_sorted(arr));
 }
 
 /// Sorts the array in-place, using selection sort.
@@ -106,9 +106,9 @@ pub fn selection_sort<T: Ord>(arr: &mut [T]) {
             }
         }
         arr.swap(i, min);
-        debug_assert!(is_sorted(arr, 0..=i));
+        debug_assert!(is_sorted(&arr[0..=i]));
     }
-    debug_assert!(is_whole_sorted(arr));
+    debug_assert!(is_sorted(arr));
 }
 
 /// Sorts the array in-place, using Shellsort with
@@ -147,7 +147,7 @@ pub fn shell_sort<T: Ord>(arr: &mut [T]) {
         }
         increment /= 3;
     }
-    debug_assert!(is_whole_sorted(arr));
+    debug_assert!(is_sorted(arr));
 }
 
 #[cfg(test)]

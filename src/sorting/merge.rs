@@ -1,8 +1,8 @@
-use super::{is_sorted, is_whole_sorted};
+use super::is_sorted;
 
 fn merge<T: Clone + Ord>(arr: &mut [T], aux: &mut [T], lo: usize, mid: usize, hi: usize) {
-    debug_assert!(is_sorted(arr, lo..=mid));
-    debug_assert!(is_sorted(arr, (mid + 1)..=hi));
+    debug_assert!(is_sorted(&arr[lo..=mid]));
+    debug_assert!(is_sorted(&arr[(mid + 1)..=hi]));
 
     let mut i = lo;
     let mut j = mid + 1;
@@ -25,7 +25,7 @@ fn merge<T: Clone + Ord>(arr: &mut [T], aux: &mut [T], lo: usize, mid: usize, hi
         }
     }
 
-    debug_assert!(is_sorted(arr, lo..=hi));
+    debug_assert!(is_sorted(&arr[lo..=hi]));
 }
 
 fn topdown_sort<T: Clone + Ord>(arr: &mut [T], aux: &mut [T], lo: usize, hi: usize) {
@@ -98,7 +98,7 @@ impl MergeSort {
     pub fn top_down_sort<T: Clone + Ord>(arr: &mut [T]) {
         let mut aux: Vec<T> = arr.to_vec();
         topdown_sort(arr, &mut aux, 0, arr.len() - 1);
-        debug_assert!(is_whole_sorted(arr));
+        debug_assert!(is_sorted(arr));
     }
 
     /// Sorts the array using bottom-up mergesort.
@@ -122,7 +122,7 @@ impl MergeSort {
             }
             len *= 2;
         }
-        debug_assert!(is_whole_sorted(arr));
+        debug_assert!(is_sorted(arr));
     }
 
     /// Returns a permutation with elements from the array in a sorted order.

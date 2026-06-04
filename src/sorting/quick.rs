@@ -2,7 +2,7 @@ use std::cmp::Ordering;
 
 use rand::prelude::*;
 
-use super::{is_sorted, is_whole_sorted};
+use super::is_sorted;
 
 /// Holds different quicksort implementations
 pub struct QuickSort;
@@ -41,7 +41,7 @@ fn sort<T: Clone + Ord>(arr: &mut [T], lo: usize, hi: usize) {
     let j = partition(arr, lo, hi);
     sort(arr, lo, j.saturating_sub(1));
     sort(arr, j + 1, hi);
-    debug_assert!(is_sorted(arr, lo..=hi));
+    debug_assert!(is_sorted(&arr[lo..=hi]));
 }
 
 /// see diagram on page 298 in chapter 2.3 of the book, or their website
@@ -73,7 +73,7 @@ fn three_way_sort<T: Clone + Ord>(arr: &mut [T], lo: usize, hi: usize) {
 
     three_way_sort(arr, lo, lt.saturating_sub(1));
     three_way_sort(arr, gt + 1, hi);
-    debug_assert!(is_sorted(arr, lo..=hi));
+    debug_assert!(is_sorted(&arr[lo..=hi]));
 }
 
 impl QuickSort {
@@ -87,6 +87,7 @@ impl QuickSort {
         let mut rand = rand::rng();
         arr.shuffle(&mut rand);
         sort(arr, 0, arr.len() - 1);
+        debug_assert!(is_sorted(arr))
     }
 
     /// Sorts the array in-place using three-way quicksort
@@ -100,7 +101,7 @@ impl QuickSort {
         let mut rand = rand::rng();
         arr.shuffle(&mut rand);
         three_way_sort(arr, 0, arr.len() - 1);
-        debug_assert!(is_whole_sorted(arr));
+        debug_assert!(is_sorted(arr));
     }
 }
 
