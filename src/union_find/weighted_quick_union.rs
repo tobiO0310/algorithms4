@@ -1,4 +1,7 @@
-use crate::union_find::{UnionFind, find, generate_tests, get_roots};
+use crate::{
+    UnionFindError,
+    union_find::{UnionFind, find, generate_tests, get_roots},
+};
 
 /// Quick-Union implemented as Weighted Quick Union.
 pub struct WeightedQuickUnion {
@@ -24,7 +27,7 @@ impl UnionFind for WeightedQuickUnion {
     /// See [UnionFind::union] for details.
     ///
     /// The running time is directly tied and equal to [WeightedQuickUnion::find].
-    fn union(&mut self, p: usize, q: usize) -> Result<(), String> {
+    fn union(&mut self, p: usize, q: usize) -> Result<(), UnionFindError> {
         let (p_root, q_root) = get_roots!(p, q, self);
 
         if self.size[p_root] < self.size[q_root] {

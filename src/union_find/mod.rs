@@ -15,6 +15,26 @@ pub use quick_union_with_path_compression::QuickUnionWPC;
 pub use weighted_quick_union::WeightedQuickUnion;
 pub use weighted_quick_union_with_path_compression::WeightedQuickUnionWPC;
 
+/// The errors generated
+#[derive(Clone, Debug, Copy, PartialEq, Eq)]
+pub enum UnionFindError {
+    #[allow(missing_docs)] // struct fields here are pretty self-explanatory LOL
+    /// An out-of-bounds error, given when a user supplied a number which is too high
+    OutOfBounds { index: usize, len: usize },
+}
+
+impl std::fmt::Display for UnionFindError {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match self {
+            Self::OutOfBounds { index, len } => {
+                write!(f, "index {} is out of bounds (len is {})", index, len)
+            }
+        }
+    }
+}
+
+impl std::error::Error for UnionFindError {}
+
 /// Union-Find is a solution to the dynamic connectivity problem.
 ///
 /// ## Implementation Notes
@@ -28,13 +48,12 @@ pub use weighted_quick_union_with_path_compression::WeightedQuickUnionWPC;
 /// it is assumed that "is connected to" is an *equivalence* relation.
 /// `p` is connected to `q` iff `p` and `q` are in the same equivalence class
 /// in the aforementioned equivalence relation.
-///
 pub trait UnionFind {
-    /// Creates a new Union-Find object
+    /// Creates a new Union-Find object with <em>n</em> elements
     ///
     /// # Panics
-    /// It panics if `size = 0`
-    fn new(size: usize) -> Self;
+    /// It panics if `n = 0`
+    fn new(n: usize) -> Self;
     /// Returns the amount of components left
     ///
     /// The amount of components left is equal to the amount of equivalence classes left.
@@ -47,29 +66,22 @@ pub trait UnionFind {
     ///
     /// ## Errors
     ///
-    /// Returns an error if either `p` or `q` is bigger than or equal to `size`
-    fn union(&mut self, p: usize, q: usize) -> Result<(), String>;
+    /// Returns an error if either `p` or `q` is bigger than or equal to `n`
+    fn union(&mut self, p: usize, q: usize) -> Result<(), UnionFindError>;
     /// Returns the representative of `p`.
     ///
     /// The representative should be equal for any connected objects.
     ///
     /// ## Errors
     ///
-    /// If `p >= size` it returns [None]
+    /// If `p >= n` it returns [None]
     fn find(&mut self, p: usize) -> Option<usize>;
     /// Returns `true` if `p` is connected to `q`
     ///
     /// See [UnionFind] and [UnionFind::find] for mathematical definitions
+    #[inline] // connected is just testing `find(p) == find(q)` and that they're both `<= n`
     fn connected(&mut self, p: usize, q: usize) -> bool {
-        let p = self.find(p);
-        let q = self.find(q);
-        if let Some(p) = p
-            && let Some(q) = q
-        {
-            p == q
-        } else {
-            false
-        }
+        matches!((self.find(p), self.find(q)), (Some(p_root), Some(q_root)) if p_root == q_root)
     }
 }
 
@@ -157,8 +169,14 @@ macro_rules! find {
 
 macro_rules! get_roots {
     ($p:ident, $q:ident, $self:ident) => {{
-        let p_root = $self.find($p).ok_or("could not find pid in QuickFind")?;
-        let q_root = $self.find($q).ok_or("could not find qid in QuickFind")?;
+        let p_root = $self.find($p).ok_or(UnionFindError::OutOfBounds {
+            index: $p,
+            len: $self.id.len(),
+        })?;
+        let q_root = $self.find($q).ok_or(UnionFindError::OutOfBounds {
+            index: $q,
+            len: $self.id.len(),
+        })?;
 
         if p_root == q_root {
             return Ok(()); // nothing to do lol, p and q are connected already

@@ -4,7 +4,6 @@ use algorithms4::union_find::{
     QuickFind, QuickUnion, QuickUnionWPC, UnionFind, WeightedQuickUnion, WeightedQuickUnionWPC,
 };
 use criterion::{BenchmarkId, Criterion, Throughput, criterion_group, criterion_main};
-use num::PrimInt;
 use rand::prelude::*;
 
 fn quick_find(n: usize) -> impl UnionFind {
@@ -73,7 +72,7 @@ fn weighted_quick_union_with_path_compression(n: usize) -> impl UnionFind {
 }
 
 fn exp_range(c: Range<u32>) -> Vec<usize> {
-    c.map(|x| 2.pow(x)).collect::<Vec<_>>()
+    c.map(|x| 2usize.pow(x)).collect::<Vec<_>>()
 }
 
 fn bench_union_find(c: &mut Criterion) {

@@ -1,5 +1,9 @@
 # Algorithms, 4th edition
 
+[![CI build](https://github.com/tobiO0310/algorithms4/actions/workflows/ci.yml/badge.svg)](https://github.com/tobiO0310/algorithms4/actions)
+[![GitHub tag](https://img.shields.io/github/tag/tobiO0310/algorithms4.svg)](https://github.com/tobiO0310/algorithms4/releases)
+[![Crates.io](https://img.shields.io/crates/v/algorithms4.svg)](https://crates.io/crates/algorithms4)
+
 ## TL;DR
 This is a rust implementation of the data structures and algorithms described in
 the 4th edition of Algorithms by R. Sedgewick and K. Wayne.
