@@ -101,8 +101,10 @@ macro_rules! test_sort {
 
 mod elementary;
 mod merge;
+mod priority_queue;
 mod quick;
 
 pub use elementary::*;
 pub use merge::*;
+pub use priority_queue::*;
 pub use quick::*;
