@@ -2,8 +2,8 @@ use super::is_sorted;
 
 /// Sorts the array in-place, using elementary sort.
 ///
-/// In the worst case, this makes ~ &frac12; <em>n</em><sup>2</sup> compares
-/// and ~ &frac12; <em>n</em><sup>2</sup> exchanges to sort an array of length <em>n</em>.
+/// In the worst case, this makes ~ &frac12; *n*<sup>2</sup> compares
+/// and ~ &frac12; *n*<sup>2</sup> exchanges to sort an array of length *n*.
 /// On average, both of the aforementioned values are halved.
 ///
 /// It is stable and uses &Theta;(1) extra space (not including input array).
@@ -24,7 +24,7 @@ pub fn insertion_sort<T: Ord>(arr: &mut [T]) {
 /// Sorts the array in-place, using an optimized version of elementary sort.
 /// This uses half exchanges, instead of full exchanges, and a sentinel.
 ///
-/// In the worst case, this makes ~ &frac12; <em>n</em><sup>2</sup> compares to sort an array of length <em>n</em>.
+/// In the worst case, this makes ~ &frac12; *n*<sup>2</sup> compares to sort an array of length *n*.
 /// On average, both of the aforementioned values are halved.
 ///
 /// It is stable and uses &Theta;(1) extra space (not including input array).
@@ -60,7 +60,7 @@ pub fn insertion_sort_x<T: Clone + Ord>(arr: &mut [T]) {
 
 /// Sorts the array in-place, using binary search and insertion sort with half exchanges.
 ///
-/// In the worst case, this makes ~ &frac12; <em>n</em><sup>2</sup> exchanges to sort an array of length <em>n</em>.
+/// In the worst case, this makes ~ &frac12; *n*<sup>2</sup> exchanges to sort an array of length *n*.
 /// On average, both of the aforementioned values are halved.
 ///
 /// It is stable and uses &Theta;(1) extra space (not including input array).
@@ -92,8 +92,8 @@ pub fn binary_insertion_sort<T: Clone + Ord>(arr: &mut [T]) {
 
 /// Sorts the array in-place, using selection sort.
 ///
-/// This implementation makes ~ &frac12; <em>n</em><sup>2</sup> exchanges to sort an array of length <em>n</em>.
-/// It performs exactly <em>n</em> exchanges.
+/// This implementation makes ~ &frac12; *n*<sup>2</sup> exchanges to sort an array of length *n*.
+/// It performs exactly *n* exchanges.
 ///
 /// It is stable and uses &Theta;(1) extra space (not including input array).
 pub fn selection_sort<T: Ord>(arr: &mut [T]) {
@@ -114,8 +114,8 @@ pub fn selection_sort<T: Ord>(arr: &mut [T]) {
 /// Sorts the array in-place, using Shellsort with
 /// <a href = "https://oeis.org/A003462"> Knuth's increment sequence</a>
 /// (1, 4, 13, 40, ...). In the worst case, this implementation makes
-/// &Theta;(<em>n</em><sup>3/2</sup>) compares and exchanges to sort
-/// an array of length <em>n</em>.
+/// &Theta;(*n*<sup>3/2</sup>) compares and exchanges to sort
+/// an array of length *n*.
 ///
 /// This sorting algorithm is not stable.
 /// It uses &Theta;(1) extra memory (not including the input array).

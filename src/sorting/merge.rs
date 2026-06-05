@@ -90,11 +90,11 @@ pub struct MergeSort;
 impl MergeSort {
     /// Sorts the array using top-down mergesort.
     ///
-    /// In the worst case, this makes &Theta;(<em>n</em> log <em>n</em>) time
-    /// to sort any array of length <em>n</em> (with the assumptions that comparisons take constant time)
-    /// It does between ~ &frac12; <em>n</em> log<sub>2</sub> <em>n</em> and ~ <em>n</em> log<sub>2</sub> <em>n</em> compares.
+    /// In the worst case, this makes &Theta;(*n* log *n*) time
+    /// to sort any array of length *n* (with the assumptions that comparisons take constant time)
+    /// It does between ~ &frac12; *n* log<sub>2</sub> *n* and ~ *n* log<sub>2</sub> *n* compares.
     ///
-    /// It is stable and uses &Theta;(<em>n</em>) extra space (not including input array).
+    /// It is stable and uses &Theta;(*n*) extra space (not including input array).
     ///
     /// ## Notes
     ///
@@ -108,11 +108,11 @@ impl MergeSort {
 
     /// Sorts the array using bottom-up mergesort.
     ///
-    /// In the worst case, this makes &Theta;(<em>n</em> log <em>n</em>) time
-    /// to sort any array of length <em>n</em> (with the assumptions that comparisons take constant time)
-    /// It does between ~ &frac12; <em>n</em> log<sub>2</sub> <em>n</em> and ~ <em>n</em> log<sub>2</sub> <em>n</em> compares.
+    /// In the worst case, this makes &Theta;(*n* log *n*) time
+    /// to sort any array of length *n* (with the assumptions that comparisons take constant time)
+    /// It does between ~ &frac12; *n* log<sub>2</sub> *n* and ~ *n* log<sub>2</sub> *n* compares.
     ///
-    /// It is stable and uses &Theta;(<em>n</em>) extra space (not including input array).
+    /// It is stable and uses &Theta;(*n*) extra space (not including input array).
     pub fn bottom_up_sort<T: Clone + Ord>(arr: &mut [T]) {
         let n = arr.len();
         let mut aux = arr.to_vec();

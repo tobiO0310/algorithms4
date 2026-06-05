@@ -103,16 +103,6 @@ fn median3<T: Ord>(arr: &mut [T], i: usize, j: usize, k: usize) -> usize {
         }
     }
 }
-/*
-
-
-   // return the index of the median element among a[i], a[j], and a[k]
-   private static int median3(Comparable[] a, int i, int j, int k) {
-       return (less(a[i], a[j]) ?
-              (less(a[j], a[k]) ? j : less(a[i], a[k]) ? k : i) :
-              (less(a[k], a[j]) ? j : less(a[k], a[i]) ? k : i));
-   }
-*/
 
 const INSERTION_SORT_CUTOFF: u8 = 8;
 const MEDIAN_OF_3_CUTOFF: u8 = 40;
@@ -185,8 +175,8 @@ fn optimized_sort<T: Clone + Ord>(arr: &mut [T], lo: usize, hi: usize) {
         j -= 1;
     }
     for k in (q..=hi).rev() {
-        arr.swap(k,i);
-        i+=1;
+        arr.swap(k, i);
+        i += 1;
     }
 
     optimized_sort(arr, lo, j);
@@ -196,8 +186,8 @@ fn optimized_sort<T: Clone + Ord>(arr: &mut [T], lo: usize, hi: usize) {
 impl QuickSort {
     /// Sorts the array in-place using quicksort
     ///
-    /// In the worst case, this makes ~ 2<em>n</em> ln <em>n</em> compares on average—and
-    /// &frac16; that many exchanges—to sort any array of length <em>n</em> with distinct keys.
+    /// In the worst case, this makes ~ 2*n* ln *n* compares on average—and
+    /// &frac16; that many exchanges—to sort any array of length *n* with distinct keys.
     ///
     /// It is stable and uses &Theta;(1) extra space (not including input array).
     pub fn sort<T: Clone + Ord>(arr: &mut [T]) {
@@ -209,9 +199,9 @@ impl QuickSort {
 
     /// Sorts the array in-place using three-way quicksort
     ///
-    /// This implementation makes ~ (2ln 2) <em>N H</em> compares on an array of length <em>N</em>,
-    /// where <em>H</em> is the Shannon entropy, defined by the frequencies of the key values.
-    /// In the worst case <em>H</em> is equal to lg <em>N</em>, and this happens when all keys are distinct.
+    /// This implementation makes ~ (2ln 2) *N H* compares on an array of length *N*,
+    /// where *H* is the Shannon entropy, defined by the frequencies of the key values.
+    /// In the worst case *H* is equal to lg *N*, and this happens when all keys are distinct.
     ///
     /// It is stable and uses &Theta;(1) extra space (not including input array).
     pub fn three_way_sort<T: Clone + Ord>(arr: &mut [T]) {
