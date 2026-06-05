@@ -64,7 +64,7 @@ impl<K: Ord> IndexPriorityQueue<K> {
         debug_assert_eq!(position.len(), position.capacity());
         debug_assert_eq!(keys.len(), max_size);
         debug_assert_eq!(position.len(), max_size);
-        
+
         Self {
             heap: Vec::with_capacity(max_size),
             position,

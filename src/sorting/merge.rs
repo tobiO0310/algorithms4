@@ -90,7 +90,7 @@ pub struct MergeSort;
 impl MergeSort {
     /// Sorts the array using top-down mergesort.
     ///
-    /// In the worst case, this makes &Theta;(*n* log *n*) time
+    /// In the worst case, this takes &Theta;(*n* log *n*) time
     /// to sort any array of length *n* (with the assumptions that comparisons take constant time)
     /// It does between ~ &frac12; *n* log<sub>2</sub> *n* and ~ *n* log<sub>2</sub> *n* compares.
     ///
@@ -108,7 +108,7 @@ impl MergeSort {
 
     /// Sorts the array using bottom-up mergesort.
     ///
-    /// In the worst case, this makes &Theta;(*n* log *n*) time
+    /// In the worst case, this takes &Theta;(*n* log *n*) time
     /// to sort any array of length *n* (with the assumptions that comparisons take constant time)
     /// It does between ~ &frac12; *n* log<sub>2</sub> *n* and ~ *n* log<sub>2</sub> *n* compares.
     ///

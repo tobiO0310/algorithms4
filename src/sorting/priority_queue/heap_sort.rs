@@ -11,7 +11,9 @@ impl HeapSort {
     ///
     /// It is not stable and uses &Theta;(1) extra space (not including input array).
     pub fn sort<T: Ord>(arr: &mut [T]) {
-        if arr.len() <= 1 {return;}
+        if arr.len() <= 1 {
+            return;
+        }
         let n = arr.len() - 1;
 
         // heap construction
