@@ -1,7 +1,9 @@
 use core::fmt;
 use std::{cmp, fmt::Debug};
 
+mod heap_sort;
 mod index;
+pub use heap_sort::*;
 pub use index::*;
 
 // Returns index of parent
