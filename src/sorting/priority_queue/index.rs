@@ -1,13 +1,13 @@
 use core::fmt;
 use std::error::Error;
 
-use crate::sorting::priority_queue::{left_child, parent, right_child};
+use super::{left_child, parent, right_child};
 
 /// An index priority queue implemented with a binary heap,
-/// ensuring log<sub>2</sub> *n* amortized time for [PriorityQueue::insert]
-/// and [PriorityQueue::delete].
+/// ensuring log<sub>2</sub> *n* amortized time for [IndexPriorityQueue::insert]
+/// and [IndexPriorityQueue::pop].
 ///
-/// This priority queue will order such that [Ordering::Greater] elements are first.
+/// This priority queue will order such that [std::cmp::Ordering::Greater] elements are first.
 /// (Max priority queue)
 ///
 /// # Example
@@ -53,7 +53,7 @@ impl Error for IndexPriorityQueueErrors {}
 impl<K: Ord> IndexPriorityQueue<K> {
     /// Initializes an empty priority queue.
     ///
-    /// Uses the default natural ordering of K and can hold at max [max_size] elements.
+    /// Uses the default natural ordering of K and can hold at max `max_size` elements.
     pub fn new(max_size: usize) -> Self {
         let mut keys = Vec::with_capacity(max_size);
         keys.resize_with(max_size, Default::default); // to allow K not to be .clone

@@ -1,4 +1,7 @@
-use std::{error::Error, io::{self, BufRead, StdinLock, Write, stdout}};
+use std::{
+    error::Error,
+    io::{self, BufRead, StdinLock, Write, stdout},
+};
 
 use algorithms4::{UnionFind, WeightedQuickUnionWPC};
 use rand::prelude::*;
@@ -29,8 +32,8 @@ fn count(n: usize) -> usize {
 
 fn get_usize_from_stdin(stdin: &mut StdinLock<'_>) -> Result<usize, String> {
     let mut buf = String::new();
-    stdin.read_line(&mut buf).map_err(|a|a.to_string())?;
-    buf.trim().parse::<usize>().map_err(|e|e.to_string())
+    stdin.read_line(&mut buf).map_err(|a| a.to_string())?;
+    buf.trim().parse::<usize>().map_err(|e| e.to_string())
 }
 
 fn main() -> Result<(), Box<dyn Error>> {

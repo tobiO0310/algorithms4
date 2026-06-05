@@ -23,9 +23,9 @@ fn right_child(i: usize) -> usize {
 
 /// A priority queue implemented with a binary heap,
 /// ensuring log<sub>2</sub> *n* amortized time for [PriorityQueue::insert]
-/// and [PriorityQueue::delete].
+/// and [PriorityQueue::pop].
 ///
-/// This priority queue will order such that [Ordering::Greater] elements are first.
+/// This priority queue will order such that [std::cmp::Ordering::Greater] elements are first.
 /// (Max priority queue)
 ///
 /// # Example

@@ -138,13 +138,15 @@ fn optimized_sort<T: Clone + Ord>(arr: &mut [T], lo: usize, hi: usize) {
     loop {
         loop {
             i += 1;
-            if !(arr[i] < v) || i == hi {
+            if arr[i] >= v || i == hi {
+                // !(arr[i] < v)
                 break;
             }
         }
         loop {
             j -= 1;
-            if !(v < arr[j]) || j == lo {
+            if v >= arr[j] || j == lo {
+                // !(v < arr[j])
                 break;
             }
         }

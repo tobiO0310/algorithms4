@@ -43,12 +43,7 @@ fn topdown_sort<T: Clone + Ord>(arr: &mut [T], aux: &mut [T]) {
     merge(arr, aux, mid);
 }
 
-fn index_merge<T: Ord>(
-    arr: &[T],
-    index: &mut [usize],
-    aux: &mut [usize],
-    mid: usize,
-) {
+fn index_merge<T: Ord>(arr: &[T], index: &mut [usize], aux: &mut [usize], mid: usize) {
     // copy from index to aux
     aux.clone_from_slice(index);
 
@@ -56,7 +51,7 @@ fn index_merge<T: Ord>(
     let mut i = 0;
     let mut j = mid + 1;
     let hi = index.len() - 1;
-    
+
     for item in index.iter_mut() {
         if i > mid {
             *item = aux[j];
@@ -129,7 +124,7 @@ impl MergeSort {
 
     /// Returns a permutation with elements from the array in a sorted order.
     ///
-    /// It has the same time and space complexity as [merge_top_down_sort].
+    /// It has the same time and space complexity as [MergeSort::top_down_sort].
     #[must_use] // the result is the reason for calling this LOL
     pub fn index_sort<T: Ord>(arr: &[T]) -> Vec<usize> {
         let n = arr.len();
@@ -138,7 +133,7 @@ impl MergeSort {
 
         debug_assert_eq!(index.len(), n);
         debug_assert_eq!(aux.len(), n);
-        
+
         index_sort(arr, &mut index, &mut aux);
 
         index

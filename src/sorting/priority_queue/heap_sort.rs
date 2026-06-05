@@ -1,4 +1,4 @@
-use crate::sorting::priority_queue::{left_child, parent};
+use super::{left_child, parent};
 
 /// Holds the implementation for sorting via heapsort.
 pub struct HeapSort;
@@ -36,7 +36,8 @@ impl HeapSort {
             if j < n && arr[j] < arr[j + 1] {
                 j += 1; // right child
             }
-            if !(arr[pos] <= arr[j]) {
+            if arr[pos] >= arr[j] {
+                // !(arr[pos] < arr[j])
                 break;
             }
             arr.swap(pos, j);
