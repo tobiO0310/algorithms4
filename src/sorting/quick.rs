@@ -83,22 +83,22 @@ fn median3<T: Ord>(arr: &mut [T], i: usize, j: usize, k: usize) -> usize {
             // i < j < k -> j is median
             j
         } else if arr[i] < arr[k] {
-            // i < k < j -> k is median
+            // i < k <= j -> k is median
             k
         } else {
-            // k < i < j -> i is median
+            // k <= i < j -> i is median
             i
         }
     } else {
-        // j < i
+        // j <= i
         if arr[k] < arr[j] {
-            // k < j < i -> j is median
+            // k < j <= i -> j is median
             j
         } else if arr[k] < arr[i] {
-            // j < k < i -> k is median
+            // j <= k < i -> k is median
             k
         } else {
-            // j < i < k -> i is median
+            // j <= i <= k -> i is median
             i
         }
     }
@@ -108,7 +108,7 @@ const INSERTION_SORT_CUTOFF: u8 = 8;
 const MEDIAN_OF_3_CUTOFF: u8 = 40;
 
 fn optimized_sort<T: Clone + Ord>(arr: &mut [T], lo: usize, hi: usize) {
-    let n = hi - lo + 1;
+    let n = hi + 1 - lo;
 
     // cutoff to insertion sort  :3
     if n <= INSERTION_SORT_CUTOFF as usize {
@@ -138,13 +138,13 @@ fn optimized_sort<T: Clone + Ord>(arr: &mut [T], lo: usize, hi: usize) {
     loop {
         loop {
             i += 1;
-            if arr[i] >= v || i == hi {
+            if !(arr[i] < v) || i == hi {
                 break;
             }
         }
         loop {
             j -= 1;
-            if v >= arr[j] || j == lo {
+            if !(v < arr[j]) || j == lo {
                 break;
             }
         }
@@ -172,7 +172,8 @@ fn optimized_sort<T: Clone + Ord>(arr: &mut [T], lo: usize, hi: usize) {
     i = j + 1;
     for k in lo..=p {
         arr.swap(k, j);
-        j -= 1;
+        j = j.saturating_sub(1)
+        // lo == p may make j = 0, therefore we need to saturate sub
     }
     for k in (q..=hi).rev() {
         arr.swap(k, i);

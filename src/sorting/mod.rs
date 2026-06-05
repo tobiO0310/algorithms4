@@ -63,6 +63,24 @@ macro_rules! test_sort {
                 }
 
                 #[test]
+                fn [<$name _really_big_works>]() {
+                    let mut rand = rand::rng();
+
+                    let mut arr = vec![0; 10_000];
+                    for item in arr.iter_mut() {
+                        *item = rand.random_range(0..1000);
+                    }
+
+                    let mut clone = arr.to_vec();
+                    clone.sort(); // assume rust's sorting works
+
+                    $name(&mut arr);
+
+                    assert!(is_sorted(&arr));
+                    assert_eq!(arr, clone);
+                }
+
+                #[test]
                 fn [<$name _single>]() {
                     let mut arr = vec![1];
                     $name(&mut arr);
