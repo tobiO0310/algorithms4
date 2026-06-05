@@ -8,7 +8,8 @@ use rand::prelude::*;
 
 fn stats(v: Vec<usize>) -> (f64, f64, f64) {
     let mean = v.iter().sum::<usize>() as f64 / v.len() as f64;
-    let variance = v.iter().map(|&v| (v as f64 - mean).powi(2)).sum::<f64>() / v.len() as f64;
+    let variance = v.iter().map(|&v| (v as f64 - mean).powi(2)).sum::<f64>()
+        / v.len() as f64;
     let stddev = variance.sqrt();
 
     (mean, variance, stddev)

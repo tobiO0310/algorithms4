@@ -1,9 +1,12 @@
 use std::{hint::black_box, ops::Range};
 
 use algorithms4::union_find::{
-    QuickFind, QuickUnion, QuickUnionWPC, UnionFind, WeightedQuickUnion, WeightedQuickUnionWPC,
+    QuickFind, QuickUnion, QuickUnionWPC, UnionFind, WeightedQuickUnion,
+    WeightedQuickUnionWPC,
 };
-use criterion::{BenchmarkId, Criterion, Throughput, criterion_group, criterion_main};
+use criterion::{
+    BenchmarkId, Criterion, Throughput, criterion_group, criterion_main,
+};
 use rand::prelude::*;
 
 fn quick_find(n: usize) -> impl UnionFind {
@@ -79,15 +82,21 @@ fn bench_union_find(c: &mut Criterion) {
     let mut group = c.benchmark_group("union_find");
     for i in exp_range(5..11).iter() {
         group.throughput(Throughput::Elements(*i as u64));
-        group.bench_with_input(BenchmarkId::new("quick_find", i), i, |b, &i| {
-            b.iter(|| quick_find(black_box(i)))
-        });
-        group.bench_with_input(BenchmarkId::new("quick_union", i), i, |b, &i| {
-            b.iter(|| quick_union(black_box(i)))
-        });
-        group.bench_with_input(BenchmarkId::new("weighted_quick_union", i), i, |b, &i| {
-            b.iter(|| weighted_quick_union(black_box(i)))
-        });
+        group.bench_with_input(
+            BenchmarkId::new("quick_find", i),
+            i,
+            |b, &i| b.iter(|| quick_find(black_box(i))),
+        );
+        group.bench_with_input(
+            BenchmarkId::new("quick_union", i),
+            i,
+            |b, &i| b.iter(|| quick_union(black_box(i))),
+        );
+        group.bench_with_input(
+            BenchmarkId::new("weighted_quick_union", i),
+            i,
+            |b, &i| b.iter(|| weighted_quick_union(black_box(i))),
+        );
         group.bench_with_input(
             BenchmarkId::new("quick_union_with_path_compression", i),
             i,
@@ -96,7 +105,11 @@ fn bench_union_find(c: &mut Criterion) {
         group.bench_with_input(
             BenchmarkId::new("weighted_quick_union_with_path_compression", i),
             i,
-            |b, &i| b.iter(|| weighted_quick_union_with_path_compression(black_box(i))),
+            |b, &i| {
+                b.iter(|| {
+                    weighted_quick_union_with_path_compression(black_box(i))
+                })
+            },
         );
     }
     group.finish();

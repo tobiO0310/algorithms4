@@ -38,12 +38,14 @@ pub enum IndexPriorityQueueErrors {
 impl fmt::Display for IndexPriorityQueueErrors {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::OutOfBounds { len, index } => {
-                f.write_str(format!("Index {} out of bounds with len {}", index, len).as_str())
-            }
-            Self::DoesNotContain { index } => {
-                f.write_str(format!("IndexPriorityQueue does not contain {}", index).as_str())
-            }
+            Self::OutOfBounds { len, index } => f.write_str(
+                format!("Index {} out of bounds with len {}", index, len)
+                    .as_str(),
+            ),
+            Self::DoesNotContain { index } => f.write_str(
+                format!("IndexPriorityQueue does not contain {}", index)
+                    .as_str(),
+            ),
         }
     }
 }
@@ -83,7 +85,11 @@ impl<K: Ord> IndexPriorityQueue<K> {
     }
 
     /// Adds a new key to this priority queue.
-    pub fn insert(&mut self, index: usize, key: K) -> Result<(), IndexPriorityQueueErrors> {
+    pub fn insert(
+        &mut self,
+        index: usize,
+        key: K,
+    ) -> Result<(), IndexPriorityQueueErrors> {
         self.validate_index(index)?;
 
         self.heap.push(index);
@@ -115,7 +121,11 @@ impl<K: Ord> IndexPriorityQueue<K> {
     }
 
     /// Change the key associated with index `i` to the specified value.
-    pub fn change_key(&mut self, i: usize, key: K) -> Result<(), IndexPriorityQueueErrors> {
+    pub fn change_key(
+        &mut self,
+        i: usize,
+        key: K,
+    ) -> Result<(), IndexPriorityQueueErrors> {
         self.validate_index(i)?;
         if !self.contains(i) {
             Err(IndexPriorityQueueErrors::DoesNotContain { index: i })
@@ -191,7 +201,10 @@ impl<K: Ord> IndexPriorityQueue<K> {
         self.is_heap_orderd(left) && self.is_heap_orderd(right)
     }
 
-    fn validate_index(&self, index: usize) -> Result<(), IndexPriorityQueueErrors> {
+    fn validate_index(
+        &self,
+        index: usize,
+    ) -> Result<(), IndexPriorityQueueErrors> {
         if index >= self.keys.len() {
             Err(IndexPriorityQueueErrors::OutOfBounds {
                 len: self.keys.len(),

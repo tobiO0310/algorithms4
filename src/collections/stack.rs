@@ -53,7 +53,10 @@ impl<T> Stack<T> {
         // SAFETY: linked lists, uhh :3
         unsafe {
             // creates the actual NonNull node
-            let new = NonNull::new_unchecked(Box::into_raw(Box::new(Node { next: None, elem })));
+            let new = NonNull::new_unchecked(Box::into_raw(Box::new(Node {
+                next: None,
+                elem,
+            })));
             if let Some(old) = self.head {
                 (*new.as_ptr()).next = Some(old);
             }

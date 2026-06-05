@@ -55,7 +55,10 @@ impl<T> Queue<T> {
         // SAFETY: linked lists, am I right?
         unsafe {
             // creates the actual NonNull node
-            let new = NonNull::new_unchecked(Box::into_raw(Box::new(Node { next: None, elem })));
+            let new = NonNull::new_unchecked(Box::into_raw(Box::new(Node {
+                next: None,
+                elem,
+            })));
             if let Some(old) = self.back {
                 (*old.as_ptr()).next = Some(new);
             } else {

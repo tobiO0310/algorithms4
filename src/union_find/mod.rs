@@ -49,7 +49,7 @@ impl std::error::Error for UnionFindError {}
 /// `p` is connected to `q` iff `p` and `q` are in the same equivalence class
 /// in the aforementioned equivalence relation.
 pub trait UnionFind {
-    /// Creates a new Union-Find object with <em>n</em> elements
+    /// Creates a new Union-Find object with *n* elements
     ///
     /// # Panics
     /// It panics if `n = 0`

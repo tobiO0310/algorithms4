@@ -43,7 +43,12 @@ fn topdown_sort<T: Clone + Ord>(arr: &mut [T], aux: &mut [T]) {
     merge(arr, aux, mid);
 }
 
-fn index_merge<T: Ord>(arr: &[T], index: &mut [usize], aux: &mut [usize], mid: usize) {
+fn index_merge<T: Ord>(
+    arr: &[T],
+    index: &mut [usize],
+    aux: &mut [usize],
+    mid: usize,
+) {
     // copy from index to aux
     aux.clone_from_slice(index);
 
@@ -113,7 +118,8 @@ impl MergeSort {
         let n = arr.len();
         let mut aux = arr.to_vec();
         for len in geometric_iter(1, 2).take_while(|&len| len < n) {
-            for lo in arithmetic_iter(0, 2 * len).take_while(|&lo| lo < n - len) {
+            for lo in arithmetic_iter(0, 2 * len).take_while(|&lo| lo < n - len)
+            {
                 let mid = lo + len - 1;
                 let hi = (lo + len + len - 1).min(n - 1);
                 merge(&mut arr[lo..=hi], &mut aux[lo..=hi], mid - lo);
