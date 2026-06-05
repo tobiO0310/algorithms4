@@ -1,7 +1,7 @@
 [package]
 name = "algorithms4"
 description = "A rust implementation of the 4th edition of Algorithms by R. Sedgewick and K. Wayne."
-version = "0.0.1"
+version = "0.0.2"
 edition = "2024"
 rust-version = "1.88.0"
 
@@ -10,13 +10,21 @@ license = "MIT"
 repository = "https://github.com/tobiO0310/algorithms4"
 keywords = ["algorithms", "algs4"]
 
+[dependencies]
+rand = "0.10.1"
+
 [profile.release]
 lto = "thin"
 
 [dev-dependencies]
 criterion = "0.8.2"
+pastey = { package = "pastey", version = "0.2.3" }
 rand = "0.10.1"
 
 [[bench]]
 name = "union_find"
+harness = false
+
+[[bench]]
+name = "sorting"
 harness = false
