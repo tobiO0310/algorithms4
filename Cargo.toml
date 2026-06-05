@@ -23,3 +23,7 @@ pastey = { package = "pastey", version = "0.2.3" }
 [[bench]]
 name = "union_find"
 harness = false
+
+[[bench]]
+name = "sorting"
+harness = false

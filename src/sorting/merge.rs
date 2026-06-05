@@ -47,17 +47,17 @@ fn index_merge<T: Ord>(
     arr: &[T],
     index: &mut [usize],
     aux: &mut [usize],
-    lo: usize,
     mid: usize,
-    hi: usize,
 ) {
     // copy from index to aux
-    aux[lo..=hi].clone_from_slice(&index[lo..=hi]);
+    aux.clone_from_slice(index);
 
     // merge into index
-    let mut i = lo;
+    let mut i = 0;
     let mut j = mid + 1;
-    for item in index.iter_mut().take(hi + 1).skip(lo) {
+    let hi = index.len() - 1;
+    
+    for item in index.iter_mut() {
         if i > mid {
             *item = aux[j];
             j += 1;
@@ -74,14 +74,15 @@ fn index_merge<T: Ord>(
     }
 }
 
-fn index_sort<T: Ord>(arr: &[T], index: &mut [usize], aux: &mut [usize], lo: usize, hi: usize) {
-    if hi <= lo {
+fn index_sort<T: Ord>(arr: &[T], index: &mut [usize], aux: &mut [usize]) {
+    if index.len() <= 1 {
         return;
     }
-    let mid = lo + (hi - lo) / 2;
-    index_sort(arr, index, aux, lo, mid);
-    index_sort(arr, index, aux, mid + 1, hi);
-    index_merge(arr, index, aux, lo, mid, hi);
+    let mid = (index.len() - 1) / 2;
+    let hi = index.len() - 1;
+    index_sort(arr, &mut index[..=mid], &mut aux[..=mid]);
+    index_sort(arr, &mut index[(mid + 1)..=hi], &mut aux[(mid + 1)..=hi]);
+    index_merge(arr, index, aux, mid);
 }
 
 /// Holds different mergesort implementations
@@ -133,9 +134,12 @@ impl MergeSort {
     pub fn index_sort<T: Ord>(arr: &[T]) -> Vec<usize> {
         let n = arr.len();
         let mut index = (0..n).collect::<Vec<_>>();
-
         let mut aux = (0..n).collect::<Vec<_>>();
-        index_sort(arr, &mut index, &mut aux, 0, n - 1);
+
+        debug_assert_eq!(index.len(), n);
+        debug_assert_eq!(aux.len(), n);
+        
+        index_sort(arr, &mut index, &mut aux);
 
         index
     }
