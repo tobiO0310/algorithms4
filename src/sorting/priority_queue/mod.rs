@@ -1,6 +1,9 @@
 use core::fmt;
 use std::{cmp, fmt::Debug};
 
+mod index;
+pub use index::*;
+
 // Returns index of parent
 fn parent(i: usize) -> usize {
     (i - 1) / 2
