@@ -15,11 +15,13 @@
 //! ```
 
 mod bst;
+mod sequential_search;
 pub use bst::*;
+pub use sequential_search::*;
 
 /// A symbol table (ST) allows for inserting keys and their associated values,
 /// and then later search for them efficiently.
-/// 
+///
 /// See implementations for further examples.
 pub trait SymbolTable<K, V>: IntoIterator<Item = (K, V)> {
     /// Adds a key and value to the [SymbolTable] if it does not already exist,
@@ -63,7 +65,7 @@ pub trait SymbolTable<K, V>: IntoIterator<Item = (K, V)> {
 /// An ordered symbol table extends a standard [SymbolTable].
 /// It allows ranking keys in comparision to each other, finding a key of `x` rank,
 /// alongside fidning the minimum and maximum keys inside the symbol table.
-/// 
+///
 /// See implementations for examples.
 pub trait OrderedSymbolTable<K: Ord, V>: SymbolTable<K, V> {
     /// Returns the smallest key according to its natural ordering

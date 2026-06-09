@@ -360,7 +360,6 @@ impl<K: Ord, V> OrderedSymbolTable<K, V> for RedBlackBST<K, V> {
         debug_assert_eq!(self.check(), Ok(()));
     }
 
-    
     fn delete_max(&mut self)
     where
         K: Clone,
@@ -663,7 +662,6 @@ mod tests {
         bst.delete_min();
         bst.delete_max();
 
-        
         assert_eq!(bst.min(), Some(&-18));
         assert_eq!(bst.max(), Some(&18));
 

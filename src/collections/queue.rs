@@ -31,6 +31,7 @@ struct Node<T> {
 
 impl<T> Queue<T> {
     /// Creates a new queue
+    #[must_use]
     pub fn new() -> Self {
         Self {
             front: None,
@@ -41,11 +42,13 @@ impl<T> Queue<T> {
     }
 
     /// Indicates whether the queue is empty
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.front.is_none()
     }
 
     /// The length of the queue
+    #[must_use]
     pub fn len(&self) -> usize {
         self.len
     }
@@ -75,6 +78,7 @@ impl<T> Queue<T> {
     }
 
     /// Dequeues the last inserted element from this queue, if it exists
+    #[must_use]
     pub fn dequeue(&mut self) -> Option<T> {
         // SAFETY: uhh linked lists again LOL
         unsafe {
@@ -95,21 +99,25 @@ impl<T> Queue<T> {
     }
 
     /// An alias for [Queue::dequeue]
+    #[must_use]
     pub fn pop(&mut self) -> Option<T> {
         self.dequeue()
     }
 
     /// Peeks at the top element of the queue
+    #[must_use]
     pub fn peek(&self) -> Option<&T> {
         unsafe { Some(&(*self.front?.as_ptr()).elem) }
     }
 
     /// Gets a mutable reference to the next element to be dequeued
+    #[must_use]
     pub fn peek_mut(&mut self) -> Option<&mut T> {
         unsafe { Some(&mut (*self.front?.as_ptr()).elem) }
     }
 
     /// Returns an iterator for the queue
+    #[must_use]
     pub fn iter(&'_ self) -> Iter<'_, T> {
         Iter {
             curr: self.front,
@@ -119,11 +127,53 @@ impl<T> Queue<T> {
     }
 
     /// Returns an iterator for the queue with mutable references instead
+    #[must_use]
     pub fn iter_mut(&'_ mut self) -> IterMut<'_, T> {
         IterMut {
             curr: self.front,
             len: self.len,
             _boo: PhantomData,
+        }
+    }
+
+    /// Deletes an element inside the queue. Returns `true` if key was found and deleted.
+    #[must_use]
+    pub fn delete_inner(&mut self, elem: &T) -> bool
+    where
+        T: Eq,
+    {
+        // SAFETY: handles raw pointers a lot, while keeping invariants
+        unsafe {
+            if let Some(f) = self.front {
+                // if the key is front, delete it and restore links to keep invariants and prevent memory leak
+                if &f.as_ref().elem == elem {
+                    self.front = f.as_ref().next;
+                    let _ = Box::from_raw(f.as_ptr());
+                    return true;
+                }
+            }
+            let current = self.front;
+            while let Some(mut node) = current {
+                let node = node.as_mut();
+                if let Some(next) = node.next
+                    && &next.as_ref().elem == elem
+                {
+                    // next node is the node to be removed, so get it's box,
+                    // and set node.next = node.next.next to avoid null pointers, memory leak
+                    // (and therefore also missing data)
+                    let n = Box::from_raw(next.as_ptr());
+                    node.next = n.next;
+                    return true;
+                }
+            }
+            false
+        }
+    }
+
+    /// Clears the entire queue
+    pub fn clear(&mut self) {
+        while self.front.is_some() {
+            let _ = self.pop();
         }
     }
 }
