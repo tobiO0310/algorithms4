@@ -9,28 +9,20 @@ on:
       - ready_for_review
 
 jobs:
-  latest_deps:
-    name: Latest Dependencies
-    runs-on: ubuntu-latest
-    if: ${{ !github.event.pull_request.draft }}
-    continue-on-error: true
-    env:
-      CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS: allow
-    steps:
-      - uses: actions/checkout@v6
-      - run: rustup update stable && rustup default stable
-      - run: cargo update --verbose
-      - run: cargo build --verbose
-      - run: cargo test --verbose
-
-  msrv:
-    name: Rust version checking
+  pre_ci:
+    name: Pre-CI tests # run some tests like rust version control and style check
     runs-on: ubuntu-latest
     if: ${{ !github.event.pull_request.draft }}
     steps:
       - uses: actions/checkout@v6
       - uses: taiki-e/install-action@cargo-hack
+      - run: rustup update stable && rustup update nightly
       - run: cargo hack check --rust-version --workspace --all-targets --ignore-private
+        # ^ fail if code cannot be run with rust version specified in Cargo.toml
+      - run: cargo clippy -- -D warnings
+        # ^ fail on warnings by clippy
+      - run: cargo +nightly fmt --all -- --check
+        # ^ fail when fmt was not run
 
   build_and_test:
     name: Rust project - latest
