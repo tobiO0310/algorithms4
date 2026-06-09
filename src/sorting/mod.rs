@@ -12,11 +12,6 @@
 //! MergeSort::bottom_up_sort(&mut vec);
 //! # assert_eq!(vec, og_sorted_vec);
 //! ```
-//!
-//! ## Notes
-//!
-//! A lot of these implementations will have extra verification code running during a non-release build.
-//! This will contribute to increased running time in non-release builds. The amount depends on sorting algorithm and array size
 
 /// Test if array is actually sorted
 fn is_sorted<T: Ord>(arr: &[T]) -> bool {
