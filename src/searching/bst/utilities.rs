@@ -272,7 +272,7 @@ pub unsafe fn put<K: Ord, V>(
 pub unsafe fn delete_min<K: Ord, V>(mut raw_h: Link<K, V>) -> Link<K, V> {
     // SAFETY: handles raw pointers, that are assumed to be valid
     unsafe {
-        let node = raw_h?.as_mut();
+        let node = raw_h?.as_ref();
 
         if node.left.is_none() {
             // SAFETY: if node is the minimum (has no more on left), it is set to be deleted.
@@ -284,7 +284,7 @@ pub unsafe fn delete_min<K: Ord, V>(mut raw_h: Link<K, V>) -> Link<K, V> {
             // 3. The value must be dropped appropriately to not leak any memory. To do this,
             // the raw pointer is returned to a Box and implicitly dropped.
             //
-            // As this is the ONLY place any value is dropped, it is guranteed to always uphold all invariants, if `raw_h` is always a red link.
+            // As this is the one of the ONLY two place any value is dropped, it is guranteed to always uphold all invariants, if `raw_h` is always a red link.
             let _ = Box::from_raw(raw_h.unwrap().as_ptr());
             return None;
         }
@@ -300,6 +300,60 @@ pub unsafe fn delete_min<K: Ord, V>(mut raw_h: Link<K, V>) -> Link<K, V> {
         let node = raw_h?.as_mut();
 
         node.left = delete_min(node.left);
+        balance(raw_h)
+    }
+}
+
+/// Finds and deletes the maximum key, and its associated value, by following left links recursively.
+///
+/// # Safety
+///
+/// This must be called with complete valid links,
+/// `raw_h`, or one of its children, must be a [Color::Red] link, and the result must be set as follows
+///
+/// ```
+/// # let mut raw_h = true;
+/// # fn delete_max(x: bool) -> bool { x }
+/// raw_h = delete_max(raw_h);
+/// ```
+///
+/// Doing so gurantees the invariant that all NonNulls are initialized, unless that invairant was already broken.
+#[must_use]
+pub unsafe fn delete_max<K: Ord, V>(mut raw_h: Link<K, V>) -> Link<K, V> {
+    // SAFETY: handles raw pointers, that are assumed to be valid
+    unsafe {
+        let node = raw_h?.as_ref();
+        if Node::is_red(node.left) {
+            raw_h = rotate_right(raw_h);
+        }
+        let node = raw_h?.as_ref();
+
+        if node.right.is_none() {
+            // SAFETY: if node is the maximum (has no more on right), it is set to be deleted.
+            // To uphold the invariants required for proper use, the following requirements must be fulfilled:
+            //
+            // 1. If a left link exist it must be given to the parent of node. This *SHOULD* always be None to uphold Red-Black invariants.
+            // 2. This should always be a red link, and that is guranteed as long as the start call to delete_max is given a red link.
+            // Because then move_red_right continously moves the link red down as this function is recursively called.
+            // 3. The value must be dropped appropriately to not leak any memory. To do this,
+            // the raw pointer is returned to a Box and implicitly dropped.
+            //
+            // As this is one of the ONLY two place any value is dropped, it is guranteed to always uphold all invariants, if `raw_h` is always a red link.
+            let _ = Box::from_raw(raw_h.unwrap().as_ptr());
+            return None;
+        }
+
+        // unwrap can be used, as node.right is guranteed to be some here (else None is returned by above if-statement)
+        if !Node::is_red(node.right)
+            && !Node::is_red(node.right.unwrap().as_ref().left)
+        {
+            // keep the red link with us on the way down to keep uphold the requirements in previous if-statement
+            raw_h = move_red_right(raw_h);
+        }
+
+        let node = raw_h?.as_mut();
+
+        node.right = delete_max(node.right);
         balance(raw_h)
     }
 }

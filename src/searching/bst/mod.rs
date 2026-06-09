@@ -357,7 +357,38 @@ impl<K: Ord, V> OrderedSymbolTable<K, V> for RedBlackBST<K, V> {
             }
         };
 
-        debug_assert!(self.is_empty() || !self.contains(self.min().unwrap()));
+        debug_assert_eq!(self.check(), Ok(()));
+    }
+
+    
+    fn delete_max(&mut self)
+    where
+        K: Clone,
+        V: Clone,
+    {
+        if self.root.is_none() {
+            return;
+            // if there is no root (is_empty()), don't try to delete minimum
+            // (there cannot be any)
+        }
+
+        // SAFETY: at this point, self.root is Some, and therefore is guranteed to be initialized
+        unsafe {
+            // if both children of root are black, set root to red
+            let root = self.root.unwrap().as_mut();
+            if !Node::is_red(root.left) && !Node::is_red(root.right) {
+                root.color = Color::Red;
+            }
+
+            // SAFETY: called correctly
+            self.root = delete_max(self.root);
+            if let Some(mut root) = self.root {
+                // SAFETY: as long as root is not None, it has been initialized and can be used
+                // (root can None if min() was equal to root)
+                root.as_mut().color = Color::Black
+            }
+        };
+
         debug_assert_eq!(self.check(), Ok(()));
     }
 
@@ -629,14 +660,23 @@ mod tests {
         assert_eq!(bst.min(), Some(&-20));
         assert_eq!(bst.max(), Some(&20));
 
-        assert_eq!(bst.floor(&19), Some(&18));
-        assert_eq!(bst.ceiling(&-19), Some(&-18));
+        bst.delete_min();
+        bst.delete_max();
 
-        assert_eq!(bst.floor(&20), Some(&20));
-        assert_eq!(bst.ceiling(&-20), Some(&-20));
+        
+        assert_eq!(bst.min(), Some(&-18));
+        assert_eq!(bst.max(), Some(&18));
 
-        assert_eq!(bst.rank(&20), bst.size() - 1); // the -1 is because rank is about of keys below it.
-        assert_eq!(bst.select(10), Some(&0));
+        assert_eq!(bst.floor(&17), Some(&16));
+        assert_eq!(bst.ceiling(&-17), Some(&-16));
+
+        assert_eq!(bst.floor(&18), Some(&18));
+        assert_eq!(bst.ceiling(&-18), Some(&-18));
+
+        assert_eq!(bst.rank(&18), bst.size() - 1);
+        // the -1 is because rank is about of keys below it.
+        assert_eq!(bst.select(9), Some(&0));
+        // -18, -16, -14, -12, -10, -8, -6, -4, -2 (total 9 keys < 0 -> select(9) == 0)
 
         // test iter_between returns ONLY and ALL (key, value) st. lo <= key <= hi
         let mut vec = vec![-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10];
