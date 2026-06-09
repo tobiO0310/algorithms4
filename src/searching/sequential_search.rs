@@ -1,6 +1,8 @@
+use std::ops::Index;
+
 use crate::{
     SymbolTable,
-    collections::queue::{IntoIter, Queue},
+    collections::queue::{self, IntoIter, Queue},
 };
 
 #[derive(Debug, Default, Clone, Copy)]
@@ -30,15 +32,31 @@ impl<K: Ord, V> Ord for Node<K, V> {
 
 /// A [SymbolTable] implemented as an unordered linked list.
 #[derive(Debug, Default, Clone, PartialEq, Eq, PartialOrd, Ord)]
-pub struct SequentialSearch<K, V> {
+pub struct SequentialSearch<K: Eq, V> {
     queue: Queue<Node<K, V>>,
 }
 
-impl<K, V> SequentialSearch<K, V> {
+/// An iterator for &[SequentialSearch].
+pub struct Iter<'a, K, V> {
+    queue: queue::Iter<'a, Node<K, V>>,
+}
+
+impl<K: Eq, V> SequentialSearch<K, V> {
     /// Instansiate a new [SequentialSearch] object
     pub fn new() -> Self {
         Self {
             queue: Queue::new(),
+        }
+    }
+
+    /// Returns an iterator over all the entries of this [SequentialSearch].
+    pub fn iter<'a>(&'a self) -> Iter<'a, K, V>
+    where
+        K: 'a,
+        V: 'a,
+    {
+        Iter {
+            queue: self.queue.iter(),
         }
     }
 }
@@ -84,19 +102,19 @@ impl<K: Eq, V> SymbolTable<K, V> for SequentialSearch<K, V> {
     fn size(&self) -> usize {
         self.queue.len()
     }
-
-    fn iter<'a>(&'a self) -> Box<dyn Iterator<Item = (&'a K, &'a V)> + 'a> {
-        Box::new(
-            self.queue
-                .iter()
-                .map(|n| (&n.key, n.value.as_ref().unwrap())),
-        )
-    }
 }
 
+impl<K: Eq, V> Index<&K> for SequentialSearch<K, V> {
+    type Output = V;
+
+    #[inline]
+    fn index(&self, key: &K) -> &Self::Output {
+        self.get(key).expect("Key not found in SymbolTable")
+    }
+}
 impl<K: Eq, V> IntoIterator for SequentialSearch<K, V> {
     type Item = (K, V);
-    type IntoIter = IntoIter<(K, V)>;
+    type IntoIter = IntoIter<Self::Item>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.queue
@@ -106,11 +124,19 @@ impl<K: Eq, V> IntoIterator for SequentialSearch<K, V> {
             .into_iter()
     }
 }
-impl<'a, K: Ord, V> IntoIterator for &'a SequentialSearch<K, V> {
+impl<'a, K: Eq, V> IntoIterator for &'a SequentialSearch<K, V> {
     type Item = (&'a K, &'a V);
-    type IntoIter = Box<dyn Iterator<Item = (&'a K, &'a V)> + 'a>;
+    type IntoIter = Iter<'a, K, V>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
+    }
+}
+impl<'a, K: Eq, V> Iterator for Iter<'a, K, V> {
+    type Item = (&'a K, &'a V);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let node = self.queue.next()?;
+        Some((&node.key, node.value.as_ref().unwrap()))
     }
 }

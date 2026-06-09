@@ -2,7 +2,8 @@ mod models;
 mod utilities;
 use core::fmt;
 use std::{
-    cmp::Ordering, error::Error, fmt::Debug, marker::PhantomData, ptr::NonNull,
+    cmp::Ordering, error::Error, fmt::Debug, marker::PhantomData, ops::Index,
+    ptr::NonNull,
 };
 
 use models::*;
@@ -10,7 +11,7 @@ use utilities::*;
 
 use crate::{
     OrderedSymbolTable, SymbolTable,
-    collections::{self, queue::Queue},
+    collections::queue::{self, Queue},
 };
 
 /// An ordered symbol table implemented as left-leaning red-black 2-3 search tree.
@@ -61,6 +62,45 @@ impl<K: Ord, V> RedBlackBST<K, V> {
         Self {
             root: None,
             _data: PhantomData,
+        }
+    }
+
+    /// Returns an iterator over all the entries of this [RedBlackBST].
+    pub fn iter<'a>(&'a self) -> queue::IntoIter<(&'a K, &'a V)>
+    where
+        K: 'a,
+        V: 'a,
+    {
+        if !self.is_empty() {
+            let mut queue: Queue<(&'a K, &'a V)> = Queue::new();
+            iter_entries(
+                self.root,
+                &mut queue,
+                self.min().unwrap(),
+                self.max().unwrap(),
+            );
+            queue.into_iter()
+        } else {
+            Queue::new().into_iter()
+        }
+    }
+
+    /// Returns an iterator between these two keys in this [RedBlackBST]
+    pub fn iter_between<'a>(
+        &'a self,
+        lo: &K,
+        hi: &K,
+    ) -> queue::IntoIter<(&'a K, &'a V)>
+    where
+        K: 'a,
+        V: 'a,
+    {
+        if !self.is_empty() {
+            let mut queue: Queue<(&'a K, &'a V)> = Queue::new();
+            iter_entries(self.root, &mut queue, lo, hi);
+            queue.into_iter()
+        } else {
+            Queue::new().into_iter()
         }
     }
 
@@ -318,14 +358,6 @@ impl<K: Ord, V> SymbolTable<K, V> for RedBlackBST<K, V> {
         debug_assert_eq!(self.root, None);
         debug_assert_eq!(self.check(), Ok(())); // idiomatic, but just to be sure
     }
-
-    fn iter<'a>(&'a self) -> Box<dyn Iterator<Item = (&'a K, &'a V)> + 'a> {
-        if !self.is_empty() {
-            self.iter_between(self.min().unwrap(), self.max().unwrap())
-        } else {
-            Box::new(std::iter::empty())
-        }
-    }
 }
 
 impl<K: Ord, V> OrderedSymbolTable<K, V> for RedBlackBST<K, V> {
@@ -445,20 +477,6 @@ impl<K: Ord, V> OrderedSymbolTable<K, V> for RedBlackBST<K, V> {
         }
         None
     }
-
-    fn iter_between<'a>(
-        &'a self,
-        lo: &K,
-        hi: &K,
-    ) -> Box<dyn Iterator<Item = (&'a K, &'a V)> + 'a> {
-        if !self.is_empty() {
-            let mut queue: Queue<(&'a K, &'a V)> = Queue::new();
-            iter_entries(self.root, &mut queue, lo, hi);
-            Box::new(queue.into_iter())
-        } else {
-            Box::new(std::iter::empty())
-        }
-    }
 }
 
 /// Drops each node recursively
@@ -514,6 +532,14 @@ impl<K: Ord, V> FromIterator<(K, V)> for RedBlackBST<K, V> {
         list
     }
 }
+impl<K: Ord, V> Index<&K> for RedBlackBST<K, V> {
+    type Output = V;
+
+    #[inline]
+    fn index(&self, key: &K) -> &Self::Output {
+        self.get(key).expect("Key not found in SymbolTable")
+    }
+}
 impl<K: Ord, V: PartialEq> PartialEq for RedBlackBST<K, V> {
     fn eq(&self, other: &Self) -> bool {
         self.size() == other.size() && self.iter().eq(other)
@@ -528,7 +554,7 @@ impl<K: Ord + fmt::Debug, V: fmt::Debug> fmt::Debug for RedBlackBST<K, V> {
 
 impl<K: Ord, V> IntoIterator for RedBlackBST<K, V> {
     type Item = (K, V);
-    type IntoIter = collections::queue::IntoIter<(K, V)>;
+    type IntoIter = queue::IntoIter<(K, V)>;
 
     fn into_iter(mut self) -> Self::IntoIter {
         if !self.is_empty() {
@@ -542,7 +568,7 @@ impl<K: Ord, V> IntoIterator for RedBlackBST<K, V> {
 }
 impl<'a, K: Ord, V> IntoIterator for &'a RedBlackBST<K, V> {
     type Item = (&'a K, &'a V);
-    type IntoIter = Box<dyn Iterator<Item = (&'a K, &'a V)> + 'a>;
+    type IntoIter = queue::IntoIter<Self::Item>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.iter()

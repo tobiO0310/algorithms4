@@ -2,10 +2,10 @@
 
 use std::{
     cmp::Ordering,
-    fmt,
-    fmt::Debug,
+    fmt::{self, Debug},
     hash::{Hash, Hasher},
     marker::PhantomData,
+    ops::Index,
     ptr::NonNull,
 };
 
@@ -175,6 +175,15 @@ impl<T> Queue<T> {
         while self.front.is_some() {
             let _ = self.pop();
         }
+    }
+}
+
+impl<T> Index<usize> for Queue<T> {
+    type Output = T;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        let mut iter = self.iter().skip(index);
+        iter.next().unwrap()
     }
 }
 

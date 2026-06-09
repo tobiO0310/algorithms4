@@ -15,9 +15,12 @@
 //! ```
 
 mod bst;
+pub mod hash_table;
 mod sequential_search;
-pub use bst::*;
-pub use sequential_search::*;
+
+pub use bst::RedBlackBST;
+pub use hash_table::{HashTable, SeperateChainingHashTable};
+pub use sequential_search::SequentialSearch;
 
 /// A symbol table (ST) allows for inserting keys and their associated values,
 /// and then later search for them efficiently.
@@ -54,12 +57,6 @@ pub trait SymbolTable<K, V>: IntoIterator<Item = (K, V)> {
     /// Returns the amount of keys in the [SymbolTable]
     #[must_use]
     fn size(&self) -> usize;
-
-    /// Returns an iterator over all the entries of this [SymbolTable]
-    ///
-    /// It is not guranteed to be ordered.
-    #[must_use]
-    fn iter<'a>(&'a self) -> Box<dyn Iterator<Item = (&'a K, &'a V)> + 'a>;
 }
 
 /// An ordered symbol table extends a standard [SymbolTable].
@@ -128,12 +125,4 @@ pub trait OrderedSymbolTable<K: Ord, V>: SymbolTable<K, V> {
             self.delete(&val.clone())
         }
     }
-
-    /// Returns an iterator between these two keys
-    #[must_use]
-    fn iter_between<'a>(
-        &'a self,
-        lo: &K,
-        hi: &K,
-    ) -> Box<dyn Iterator<Item = (&'a K, &'a V)> + 'a>;
 }

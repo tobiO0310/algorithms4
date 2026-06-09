@@ -101,10 +101,12 @@ macro_rules! test_sort {
 
 mod elementary;
 mod merge;
-mod priority_queue;
+pub mod priority_queue;
 mod quick;
 
 pub use elementary::*;
-pub use merge::*;
-pub use priority_queue::*;
-pub use quick::*;
+pub use merge::MergeSort;
+pub use priority_queue::{
+    HeapSort, IndexPriorityQueue, IndexPriorityQueueErrors, PriorityQueue,
+};
+pub use quick::QuickSort;
