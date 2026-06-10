@@ -100,7 +100,7 @@ impl<K: Hash + Eq, V> LinearProbingHashTable<K, V> {
     fn resize(&mut self, amount: usize) {
         let mut temp = LinearProbingHashTable::with_capacity(amount);
         for SearchingNode(key, value) in
-            self.items.split_off(self.items.len()).into_iter().flatten()
+            self.items.split_off(0).into_iter().flatten()
         {
             temp.put(key, value.unwrap());
         }
@@ -126,7 +126,7 @@ impl<K: Hash + Eq, V> LinearProbingHashTable<K, V> {
     // integrity not maintained during a call to delete()
     fn check<'a>(&'a self) -> Result<(), Checks<'a, K, V>> {
         // check that hash table is at most 50% full
-        if self.amount < self.items.len() * 2 {
+        if self.items.len() < self.amount * 2 {
             Err(Checks::HashTableTooSmall(self.amount, self.items.len()))
         } else {
             // check that each key in table can be found by get()
@@ -147,12 +147,13 @@ impl<K: Hash + Eq, V> SymbolTable<K, V> for LinearProbingHashTable<K, V> {
             self.resize(self.items.len() * 2);
         }
 
-        let i = self.hash(&key);
+        let mut i = self.hash(&key);
         while let Some(n) = &mut self.items[i] {
             if n.0 == key {
                 n.1 = Some(value);
                 return;
             }
+            i += 1;
         }
         self.items[i] = Some(SearchingNode(key, Some(value)));
         self.amount += 1;
@@ -271,3 +272,5 @@ impl<'a, K: Eq + Hash, V> IntoIterator for &'a LinearProbingHashTable<K, V> {
         self.iter()
     }
 }
+
+super::test_hash_table!(LinearProbingHashTable);

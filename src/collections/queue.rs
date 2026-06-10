@@ -149,10 +149,16 @@ impl<T> Queue<T> {
                 if &f.as_ref().elem == elem {
                     self.front = f.as_ref().next;
                     let _ = Box::from_raw(f.as_ptr());
+
+                    self.len -= 1;
+                    if self.front.is_none() {
+                        self.back = None; // if front is none, list is empty
+                    }
+
                     return true;
                 }
             }
-            let current = self.front;
+            let mut current = self.front;
             while let Some(mut node) = current {
                 let node = node.as_mut();
                 if let Some(next) = node.next
@@ -163,7 +169,15 @@ impl<T> Queue<T> {
                     // (and therefore also missing data)
                     let n = Box::from_raw(next.as_ptr());
                     node.next = n.next;
+
+                    self.len -= 1;
+                    if self.front.is_none() {
+                        self.back = None; // if front is none, list is empty
+                    }
+
                     return true;
+                } else {
+                    current = node.next;
                 }
             }
             false
@@ -227,5 +241,45 @@ mod tests {
         assert_eq!(queue.len(), 0);
         assert_eq!(queue.peek(), None);
         assert_eq!(queue.pop(), None);
+    }
+
+    #[test]
+    fn test_big() {
+        let mut queue = Queue::new();
+
+        assert_eq!(queue.len(), 0);
+        assert!(queue.is_empty());
+        assert_eq!(queue.dequeue(), None);
+
+        for i in 0..1_000 {
+            queue.enqueue(i);
+        }
+
+        assert_eq!(queue.len(), 1_000);
+        assert!(!queue.is_empty());
+        assert_eq!(queue.peek(), Some(&0));
+
+        for i in (0..1_000).rev() {
+            assert!(queue.delete_inner(&i));
+        }
+
+        assert_eq!(queue.len(), 0);
+        assert!(queue.is_empty());
+        assert_eq!(queue.dequeue(), None);
+
+        for i in 0..1_000 {
+            queue.enqueue(i);
+        }
+
+        assert_eq!(queue.len(), 1_000);
+        assert!(!queue.is_empty());
+        assert_eq!(queue.peek(), Some(&0));
+
+        for i in 0..1_000 {
+            assert_eq!(queue.dequeue(), Some(i));
+        }
+
+        assert_eq!(queue.len(), 0);
+        assert!(queue.is_empty());
     }
 }

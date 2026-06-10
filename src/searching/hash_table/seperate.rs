@@ -1,6 +1,7 @@
 //! This module holds a [SymbolTable] implemented as a Seperate Chaining Hash Table.
 
 use std::{
+    fmt::Debug,
     hash::{DefaultHasher, Hash, Hasher},
     ops::Index,
 };
@@ -86,7 +87,7 @@ impl<K: Eq + Hash, V> SeperateChainingHashTable<K, V> {
 
     fn resize(&mut self, amount: usize) {
         let mut temp = SeperateChainingHashTable::with_capacity(amount);
-        for st in self.st.split_off(self.st.len()) {
+        for st in self.st.split_off(0) {
             for (key, value) in st {
                 temp.put(key, value);
             }
@@ -132,6 +133,7 @@ impl<K: Eq + Hash, V> SymbolTable<K, V> for SeperateChainingHashTable<K, V> {
 
         let hash = self.hash(&key);
         self.st[hash].put(key, value);
+        self.amount += 1;
     }
 
     fn get(&self, key: &K) -> Option<&V> {
@@ -145,6 +147,7 @@ impl<K: Eq + Hash, V> SymbolTable<K, V> for SeperateChainingHashTable<K, V> {
     {
         let hash = self.hash(key);
         self.st[hash].delete(key);
+        self.amount -= 1;
 
         // halve table size if average length of list <= 2
         let chains = self.st.len();
@@ -218,3 +221,5 @@ impl<'a, K: Eq + Hash, V> IntoIterator for &'a SeperateChainingHashTable<K, V> {
         self.iter()
     }
 }
+
+super::test_hash_table!(SeperateChainingHashTable);
