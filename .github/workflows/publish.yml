@@ -1,0 +1,62 @@
+name: Publish Crate
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment:
+      name: "publish"
+      
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - run: rustup update stable
+      - name: Test
+        run: cargo test --verbose
+        
+      - name: cargo-release cache restore
+        id: cargo_release_cache_restore
+        uses: actions/cache/restore@v5
+        with:
+          path: ~/.cargo/bin/cargo-release
+          key: ${{ runner.os }}-cargo-release
+
+      - run: cargo install cargo-release
+        if: steps.cargo_release_cache_restore.outputs.cache-hit != 'true'
+
+      - name: cargo-release cache save
+        id: cargo_release_cache_save
+        uses: actions/cache/save@v5
+        if: always() && steps.cargo_release_cache_restore.outputs.cache-hit != 'true'
+        with:
+          path: ~/.cargo/bin/cargo-release
+          key: ${{ runner.os }}-cargo-release
+
+      - name: cargo login
+        run: |-
+          echo "${{ secrets.CRATES_IO_API_TOKEN }}" | cargo login
+
+      - name: Release on GH
+        uses: softprops/action-gh-release@v3
+        with:
+          generate_release_notes: true
+
+      - name: Cargo release
+        run: |-
+          cargo release \
+            publish \
+            --workspace \
+            --all-features \
+            --allow-branch HEAD \
+            --no-confirm \
+            --execute

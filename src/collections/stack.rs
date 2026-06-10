@@ -30,6 +30,7 @@ struct Node<T> {
 
 impl<T> Stack<T> {
     /// Creates a new stack
+    #[must_use]
     pub fn new() -> Self {
         Self {
             head: None,
@@ -39,11 +40,13 @@ impl<T> Stack<T> {
     }
 
     /// Returns the amount of elements in the stack
+    #[must_use]
     pub fn len(&self) -> usize {
         self.len
     }
 
     /// Indicates whether the stack is empty or not
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.len == 0
     }
@@ -66,6 +69,7 @@ impl<T> Stack<T> {
     }
 
     /// Pops the last inserted element, if any exist
+    #[must_use]
     pub fn pop(&mut self) -> Option<T> {
         unsafe {
             // only do stuff if head actually exists lol
@@ -85,16 +89,19 @@ impl<T> Stack<T> {
     }
 
     /// Peeks at the top element of the stack
+    #[must_use]
     pub fn peek(&self) -> Option<&T> {
         unsafe { Some(&(*self.head?.as_ptr()).elem) }
     }
 
     /// Gets a mutable reference to the next element
+    #[must_use]
     pub fn peek_mut(&mut self) -> Option<&mut T> {
         unsafe { Some(&mut (*self.head?.as_ptr()).elem) }
     }
 
     /// Returns an iterator for the stack
+    #[must_use]
     pub fn iter(&'_ self) -> Iter<'_, T> {
         Iter {
             curr: self.head,
@@ -104,6 +111,7 @@ impl<T> Stack<T> {
     }
 
     /// Returns an iterator for the stack with mutable references instead
+    #[must_use]
     pub fn iter_mut(&'_ mut self) -> IterMut<'_, T> {
         IterMut {
             curr: self.head,

@@ -14,6 +14,7 @@ pub struct Bag<T> {
 
 impl<T> Bag<T> {
     /// Creates a new Bag
+    #[must_use]
     pub fn new() -> Self {
         Self {
             data: LinkedList::new(),
@@ -24,6 +25,7 @@ impl<T> Bag<T> {
         self.data.push_back(data);
     }
     /// Checks if the bag is empty
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.data.is_empty()
     }

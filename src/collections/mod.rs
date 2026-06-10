@@ -5,6 +5,7 @@ pub mod queue;
 pub mod stack;
 
 pub use bag::Bag;
+pub use queue::Queue;
 pub use stack::Stack;
 
 macro_rules! extend_singly_linked_list {

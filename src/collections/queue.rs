@@ -2,10 +2,10 @@
 
 use std::{
     cmp::Ordering,
-    fmt,
-    fmt::Debug,
+    fmt::{self, Debug},
     hash::{Hash, Hasher},
     marker::PhantomData,
+    ops::Index,
     ptr::NonNull,
 };
 
@@ -31,6 +31,7 @@ struct Node<T> {
 
 impl<T> Queue<T> {
     /// Creates a new queue
+    #[must_use]
     pub fn new() -> Self {
         Self {
             front: None,
@@ -41,11 +42,13 @@ impl<T> Queue<T> {
     }
 
     /// Indicates whether the queue is empty
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.front.is_none()
     }
 
     /// The length of the queue
+    #[must_use]
     pub fn len(&self) -> usize {
         self.len
     }
@@ -75,6 +78,7 @@ impl<T> Queue<T> {
     }
 
     /// Dequeues the last inserted element from this queue, if it exists
+    #[must_use]
     pub fn dequeue(&mut self) -> Option<T> {
         // SAFETY: uhh linked lists again LOL
         unsafe {
@@ -95,21 +99,25 @@ impl<T> Queue<T> {
     }
 
     /// An alias for [Queue::dequeue]
+    #[must_use]
     pub fn pop(&mut self) -> Option<T> {
         self.dequeue()
     }
 
     /// Peeks at the top element of the queue
+    #[must_use]
     pub fn peek(&self) -> Option<&T> {
         unsafe { Some(&(*self.front?.as_ptr()).elem) }
     }
 
     /// Gets a mutable reference to the next element to be dequeued
+    #[must_use]
     pub fn peek_mut(&mut self) -> Option<&mut T> {
         unsafe { Some(&mut (*self.front?.as_ptr()).elem) }
     }
 
     /// Returns an iterator for the queue
+    #[must_use]
     pub fn iter(&'_ self) -> Iter<'_, T> {
         Iter {
             curr: self.front,
@@ -119,12 +127,77 @@ impl<T> Queue<T> {
     }
 
     /// Returns an iterator for the queue with mutable references instead
+    #[must_use]
     pub fn iter_mut(&'_ mut self) -> IterMut<'_, T> {
         IterMut {
             curr: self.front,
             len: self.len,
             _boo: PhantomData,
         }
+    }
+
+    /// Deletes an element inside the queue. Returns `true` if key was found and deleted.
+    #[must_use]
+    pub fn delete_inner(&mut self, elem: &T) -> bool
+    where
+        T: Eq,
+    {
+        // SAFETY: handles raw pointers a lot, while keeping invariants
+        unsafe {
+            if let Some(f) = self.front {
+                // if the key is front, delete it and restore links to keep invariants and prevent memory leak
+                if &f.as_ref().elem == elem {
+                    self.front = f.as_ref().next;
+                    let _ = Box::from_raw(f.as_ptr());
+
+                    self.len -= 1;
+                    if self.front.is_none() {
+                        self.back = None; // if front is none, list is empty
+                    }
+
+                    return true;
+                }
+            }
+            let mut current = self.front;
+            while let Some(mut node) = current {
+                let node = node.as_mut();
+                if let Some(next) = node.next
+                    && &next.as_ref().elem == elem
+                {
+                    // next node is the node to be removed, so get it's box,
+                    // and set node.next = node.next.next to avoid null pointers, memory leak
+                    // (and therefore also missing data)
+                    let n = Box::from_raw(next.as_ptr());
+                    node.next = n.next;
+
+                    self.len -= 1;
+                    if self.front.is_none() {
+                        self.back = None; // if front is none, list is empty
+                    }
+
+                    return true;
+                } else {
+                    current = node.next;
+                }
+            }
+            false
+        }
+    }
+
+    /// Clears the entire queue
+    pub fn clear(&mut self) {
+        while self.front.is_some() {
+            let _ = self.pop();
+        }
+    }
+}
+
+impl<T> Index<usize> for Queue<T> {
+    type Output = T;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        let mut iter = self.iter().skip(index);
+        iter.next().unwrap()
     }
 }
 
@@ -168,5 +241,45 @@ mod tests {
         assert_eq!(queue.len(), 0);
         assert_eq!(queue.peek(), None);
         assert_eq!(queue.pop(), None);
+    }
+
+    #[test]
+    fn test_big() {
+        let mut queue = Queue::new();
+
+        assert_eq!(queue.len(), 0);
+        assert!(queue.is_empty());
+        assert_eq!(queue.dequeue(), None);
+
+        for i in 0..1_000 {
+            queue.enqueue(i);
+        }
+
+        assert_eq!(queue.len(), 1_000);
+        assert!(!queue.is_empty());
+        assert_eq!(queue.peek(), Some(&0));
+
+        for i in (0..1_000).rev() {
+            assert!(queue.delete_inner(&i));
+        }
+
+        assert_eq!(queue.len(), 0);
+        assert!(queue.is_empty());
+        assert_eq!(queue.dequeue(), None);
+
+        for i in 0..1_000 {
+            queue.enqueue(i);
+        }
+
+        assert_eq!(queue.len(), 1_000);
+        assert!(!queue.is_empty());
+        assert_eq!(queue.peek(), Some(&0));
+
+        for i in 0..1_000 {
+            assert_eq!(queue.dequeue(), Some(i));
+        }
+
+        assert_eq!(queue.len(), 0);
+        assert!(queue.is_empty());
     }
 }

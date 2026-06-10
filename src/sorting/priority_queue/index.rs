@@ -1,3 +1,5 @@
+//! Holds an Index Priority Queue implementation.
+
 use core::fmt;
 use std::error::Error;
 

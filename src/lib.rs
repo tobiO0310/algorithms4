@@ -4,9 +4,11 @@
 #![warn(missing_docs)]
 
 pub mod collections;
+pub mod searching;
 pub mod sorting;
 pub mod union_find;
 mod utilities;
 
+pub use searching::*;
 pub use sorting::*;
 pub use union_find::*;

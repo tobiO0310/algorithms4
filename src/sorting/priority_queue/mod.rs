@@ -1,9 +1,11 @@
+//! Holds a Priority Queue implementations.
+
 use core::fmt;
 use std::{cmp, fmt::Debug};
 
 mod heap_sort;
-mod index;
-pub use heap_sort::*;
+pub mod index;
+pub use heap_sort::HeapSort;
 pub use index::*;
 
 // Returns index of parent

@@ -1,4 +1,6 @@
 name: Cargo Deny
+permissions:
+  contents: read
 
 on: [push, pull_request]
 
