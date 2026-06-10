@@ -25,6 +25,7 @@ jobs:
         # ^ fail on warnings by clippy
       - run: RUSTDOCFLAGS="-D warnings" cargo doc
         # ^ fail on documentation warnings
+      - run: rustup component add rustfmt --toolchain nightly
       - run: cargo +nightly fmt --all -- --check
         # ^ fail when fmt was not run
 
