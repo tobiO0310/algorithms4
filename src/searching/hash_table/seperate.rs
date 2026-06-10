@@ -17,8 +17,8 @@ const INITIAL_CAPACITY: usize = 4;
 /// # Examples
 ///
 /// ```
-/// # use algorithms4::{RedBlackBST, SymbolTable};
-/// let mut bst = RedBlackBST::new();
+/// # use algorithms4::{SeperateChainingHashTable, SymbolTable};
+/// let mut bst = SeperateChainingHashTable::new();
 ///
 /// bst.put("Test1", 1);
 /// bst.put("Test2", 2);

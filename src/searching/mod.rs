@@ -19,7 +19,9 @@ pub mod hash_table;
 mod sequential_search;
 
 pub use bst::RedBlackBST;
-pub use hash_table::{HashTable, SeperateChainingHashTable};
+pub use hash_table::{
+    HashTable, LinearProbingHashTable, SeperateChainingHashTable,
+};
 pub use sequential_search::SequentialSearch;
 
 /// A symbol table (ST) allows for inserting keys and their associated values,
@@ -124,5 +126,24 @@ pub trait OrderedSymbolTable<K: Ord, V>: SymbolTable<K, V> {
         if let Some(val) = val {
             self.delete(&val.clone())
         }
+    }
+}
+
+#[derive(Debug, Default, Clone, Copy)]
+struct SearchingNode<K, V>(K, Option<V>);
+impl<K: PartialEq, V> PartialEq for SearchingNode<K, V> {
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
+    }
+}
+impl<K: Eq, V> Eq for SearchingNode<K, V> {}
+impl<K: PartialOrd, V> PartialOrd for SearchingNode<K, V> {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.0.partial_cmp(&other.0)
+    }
+}
+impl<K: Ord, V> Ord for SearchingNode<K, V> {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.0.cmp(&other.0)
     }
 }
