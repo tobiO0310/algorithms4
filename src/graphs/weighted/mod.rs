@@ -1,29 +1,21 @@
 mod edge;
 mod graphs;
-pub use edge::UndirectedEdge;
-pub use graphs::WeightedGraph;
+mod mst;
+mod shortestpath;
+use std::{
+    cmp::Ordering,
+    ops::{Deref, DerefMut},
+};
 
-/// A weighted edge.
-pub trait WeightedEdge {
-    /// Returns any end/vertex of this edge
-    #[must_use]
-    fn either(&self) -> usize;
-
-    /// Returns the other end/vertex of this edge
-    ///
-    /// # Panics
-    ///
-    /// Panics if the input is neither of the two vertexes in this edge.
-    #[must_use]
-    fn other(&self, vertex: usize) -> usize;
-
-    /// Get the weight of this edge
-    #[must_use]
-    fn weight(&self) -> f64;
-}
+pub use edge::{WeightedDirectedEdge, WeightedEdge};
+pub use graphs::{WeightedDiGraph, WeightedGraph};
+pub use mst::MST;
+pub use shortestpath::{
+    AStarResult, BellmanFordResult, DijkstraResult, ShortestPath,
+};
 
 /// A graph with weighted edges, may be directed.
-pub trait EdgeWeightedGraph<T: WeightedEdge> {
+pub trait EdgeWeightedGraph<T> {
     /// The amount of vertices in this graph
     #[must_use]
     fn vertices(&self) -> usize;
@@ -56,4 +48,37 @@ pub trait EdgeWeightedGraph<T: WeightedEdge> {
 
     /// Returns an iterator over all edges
     fn all_edges(&self) -> impl Iterator<Item = T>;
+}
+
+/// Smaller numbers are given as [Ordering::Greater] (used to find smallest edge weights)
+#[derive(Debug, Clone, Copy)]
+struct MinFloatTotalOrder(f64);
+
+impl PartialEq for MinFloatTotalOrder {
+    fn eq(&self, other: &Self) -> bool {
+        self.0.total_cmp(&other.0).is_eq()
+    }
+}
+impl Eq for MinFloatTotalOrder {}
+impl PartialOrd for MinFloatTotalOrder {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+impl Ord for MinFloatTotalOrder {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.0.total_cmp(&other.0).reverse() // make it small values appear larger
+    }
+}
+impl Deref for MinFloatTotalOrder {
+    type Target = f64;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl DerefMut for MinFloatTotalOrder {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
 }
