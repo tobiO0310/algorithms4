@@ -66,7 +66,7 @@ impl EdgeWeightedGraph<WeightedEdge> for WeightedGraph {
         }
         bag.into_iter()
     }
-    
+
     fn to_dot(&self) -> String {
         let mut str = String::new();
         str.push_str(
@@ -79,11 +79,27 @@ impl EdgeWeightedGraph<WeightedEdge> for WeightedGraph {
             for &e in self.adjacent[v].iter() {
                 let w = e.other(v);
                 if v < w {
-                    str.push_str(format!("{:?} -- {:?} [weight={:?}]\n", v, w, e.weight()).as_str());
+                    str.push_str(
+                        format!(
+                            "{:?} -- {:?} [weight={:?}]\n",
+                            v,
+                            w,
+                            e.weight()
+                        )
+                        .as_str(),
+                    );
                 } else if v == w {
                     // include only one copy of each self loop (self loops will be consecutive)
                     if !self_loop {
-                        str.push_str(format!("{:?} -- {:?} [weight={:?}]\n", v, w, e.weight()).as_str());
+                        str.push_str(
+                            format!(
+                                "{:?} -- {:?} [weight={:?}]\n",
+                                v,
+                                w,
+                                e.weight()
+                            )
+                            .as_str(),
+                        );
                     }
                     self_loop = !self_loop;
                 }
@@ -211,7 +227,15 @@ impl EdgeWeightedGraph<WeightedDirectedEdge> for WeightedDiGraph {
             for &e in self.adjacent[v].iter() {
                 let w = e.to();
                 if v <= w {
-                    str.push_str(format!("{:?} -> {:?} [weight={:}]\n", v, w, e.weight()).as_str());
+                    str.push_str(
+                        format!(
+                            "{:?} -> {:?} [weight={:}]\n",
+                            v,
+                            w,
+                            e.weight()
+                        )
+                        .as_str(),
+                    );
                 }
             }
         }
