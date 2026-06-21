@@ -21,7 +21,7 @@ impl HeapSort {
             Self::sink(arr, k, n);
         }
 
-        // sortdown
+        // sort down
         let mut k = n;
         while k > 0 {
             arr.swap(0, k);

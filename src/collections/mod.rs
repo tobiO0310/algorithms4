@@ -11,6 +11,7 @@ pub use stack::Stack;
 macro_rules! extend_singly_linked_list {
     ($t:ty; $l:ty) => {
         /// An iterator
+        #[must_use = "iterators are lazy and do nothing on their own"]
         pub struct Iter<'a, T> {
             curr: $l,
             len: usize,
@@ -18,6 +19,7 @@ macro_rules! extend_singly_linked_list {
         }
 
         /// An iterator with mutable references
+        #[must_use = "iterators are lazy and do nothing on their own"]
         pub struct IterMut<'a, T> {
             curr: $l,
             len: usize,
@@ -25,6 +27,7 @@ macro_rules! extend_singly_linked_list {
         }
 
         /// The iterator of the consumed item
+        #[must_use = "iterators are lazy and do nothing on their own"]
         pub struct IntoIter<T> {
             item: $t,
         }

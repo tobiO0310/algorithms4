@@ -1,6 +1,6 @@
 use crate::{collections::Bag, graphs::Graph};
 
-/// An unweighted undirected graph implemented with adjencency lists.
+/// An unweighted undirected graph implemented with adjacency lists.
 ///
 /// The graph is made up of the graph vertex set *V* , containing `{0, 1, ..., V - 2, V - 1}`.
 /// Parallel edges and self-loops are permitted in this graph.

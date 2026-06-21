@@ -18,7 +18,7 @@ pub use weighted_quick_union_with_path_compression::WeightedQuickUnionWPC;
 /// The errors generated
 #[derive(Clone, Debug, Copy, PartialEq, Eq)]
 pub enum UnionFindError {
-    #[allow(missing_docs)] // struct fields here are pretty self-explanatory LOL
+    #[allow(missing_docs)] // struct fields here are pretty self-explanatory
     /// An out-of-bounds error, given when a user supplied a number which is too high
     OutOfBounds { index: usize, len: usize },
 }
@@ -53,10 +53,12 @@ pub trait UnionFind {
     ///
     /// # Panics
     /// It panics if `n = 0`
+    #[must_use]
     fn new(n: usize) -> Self;
     /// Returns the amount of components left
     ///
     /// The amount of components left is equal to the amount of equivalence classes left.
+    #[must_use]
     fn count(&self) -> usize;
     /// Unions `p` and `q` together.
     ///
@@ -75,11 +77,13 @@ pub trait UnionFind {
     /// ## Errors
     ///
     /// If `p >= n` it returns [None]
+    #[must_use]
     fn find(&mut self, p: usize) -> Option<usize>;
     /// Returns `true` if `p` is connected to `q`
     ///
     /// See [UnionFind] and [UnionFind::find] for mathematical definitions
     #[inline] // connected is just testing `find(p) == find(q)` and that they're both `<= n`
+    #[must_use]
     fn connected(&mut self, p: usize, q: usize) -> bool {
         matches!((self.find(p), self.find(q)), (Some(p_root), Some(q_root)) if p_root == q_root)
     }
@@ -179,7 +183,7 @@ macro_rules! get_roots {
         })?;
 
         if p_root == q_root {
-            return Ok(()); // nothing to do lol, p and q are connected already
+            return Ok(()); // nothing to do, p and q are connected already
         };
 
         (p_root, q_root)

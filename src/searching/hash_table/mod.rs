@@ -1,8 +1,8 @@
 //! This module holds different Hash Table implementations for a [SymbolTable]
 pub mod linear_probing;
-pub mod seperate;
+pub mod separate;
 pub use linear_probing::LinearProbingHashTable;
-pub use seperate::{HashTable, SeperateChainingHashTable};
+pub use separate::{HashTable, SeparateChainingHashTable};
 
 #[allow(unused_imports)] // used in doc at the top :))
 use super::SymbolTable;

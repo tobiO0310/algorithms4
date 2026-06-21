@@ -58,6 +58,7 @@ impl<K: Ord> IndexPriorityQueue<K> {
     /// Initializes an empty priority queue.
     ///
     /// Uses the default natural ordering of K and can hold at max `max_size` elements.
+    #[must_use]
     pub fn new(max_size: usize) -> Self {
         let mut keys = Vec::with_capacity(max_size);
         keys.resize_with(max_size, Default::default); // to allow K not to be .clone
@@ -77,13 +78,16 @@ impl<K: Ord> IndexPriorityQueue<K> {
     }
 
     /// Returns the number of keys on this priority queue.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.heap.len()
     }
 
     /// Returns true if this priority queue is empty.
+    #[must_use]
+    #[inline(always)]
     pub fn is_empty(&self) -> bool {
-        self.heap.len() == 0
+        self.len() == 0
     }
 
     /// Adds a new key to this priority queue.
@@ -102,21 +106,25 @@ impl<K: Ord> IndexPriorityQueue<K> {
     }
 
     /// Peeks at the priority queue for the next key to be removed.
+    #[must_use]
     pub fn peek_key(&self) -> Option<&K> {
         self.keys.get(*self.heap.first()?)?.as_ref()
     }
 
     /// Peeks at the priority queue for the next index to be removed.
+    #[must_use]
     pub fn peek_index(&self) -> Option<usize> {
         self.heap.first().copied()
     }
 
     /// Checks if contains a value with specified index.
+    #[must_use]
     pub fn contains(&self, index: usize) -> bool {
         self.validate_index(index).is_ok() && self.position[index].is_some()
     }
 
     /// Returns the key associated with index `i`.
+    #[must_use]
     pub fn key_of(&self, i: usize) -> Option<&K> {
         self.validate_index(i).ok()?;
         self.keys.get(i)?.as_ref()
@@ -149,7 +157,7 @@ impl<K: Ord> IndexPriorityQueue<K> {
         self.heap.swap(0, n);
         let key = self.heap.pop()?;
         self.sink(0);
-        debug_assert!(self.is_heap_orderd(0));
+        debug_assert!(self.is_heap_ordered(0));
 
         self.position[key] = None;
         self.keys[key] = None;
@@ -188,7 +196,7 @@ impl<K: Ord> IndexPriorityQueue<K> {
         self.keys[self.heap[i]] < self.keys[self.heap[j]]
     }
 
-    fn is_heap_orderd(&self, pos: usize) -> bool {
+    fn is_heap_ordered(&self, pos: usize) -> bool {
         if pos > self.heap.len() {
             return true;
         }
@@ -200,7 +208,7 @@ impl<K: Ord> IndexPriorityQueue<K> {
             return false;
         }
 
-        self.is_heap_orderd(left) && self.is_heap_orderd(right)
+        self.is_heap_ordered(left) && self.is_heap_ordered(right)
     }
 
     fn validate_index(

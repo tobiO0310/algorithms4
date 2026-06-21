@@ -3,7 +3,7 @@ use crate::{
     graphs::{EdgeWeightedGraph, WeightedDirectedEdge, WeightedEdge},
 };
 
-/// A weighted undirected graph implemented with adjencency lists.
+/// A weighted undirected graph implemented with adjacency lists.
 ///
 /// The graph is made up of the graph vertex set *V* , containing `{0, 1, ..., V - 2, V - 1}`.
 /// Parallel edges and self-loops are permitted in this graph.
@@ -111,7 +111,7 @@ impl EdgeWeightedGraph<WeightedEdge> for WeightedGraph {
     }
 }
 
-/// A weighted directed graph implemented with adjencency lists.
+/// A weighted directed graph implemented with adjacency lists.
 ///
 /// The graph is made up of the graph vertex set *V* , containing `{0, 1, ..., V - 2, V - 1}`.
 /// Parallel edges and self-loops are permitted in this graph.

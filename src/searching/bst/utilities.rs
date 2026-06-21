@@ -1,8 +1,8 @@
-//! Utitlies for BST
+//! Utilities for Balanced Search Trees
 //!
 //! # Safety
 //!
-//! All getters are safe functions, as they do NOT mutate any memory.
+//! All getter functions are safe functions, as they do NOT mutate any memory.
 //! However, the others may mutate memory, and therefore to uphold invariants they are marked unsafe,
 //! and a notice on how to safely use them are given.
 //!
@@ -26,7 +26,7 @@ unsafe fn rotate_left<K, V>(raw_h: Link<K, V>) -> Link<K, V> {
     debug_assert!(raw_h.is_some());
     debug_assert!(Node::is_red(unsafe { raw_h.unwrap().as_ref().right }));
 
-    // SAFETY: raw_h is gurantted to be initialized, since it is Some else propagates
+    // SAFETY: raw_h is guaranteed to be initialized, since it is Some else propagates
     let h = unsafe { raw_h.unwrap().as_mut() };
     let raw_x = h.right;
     // SAFETY: raw_x must always be there (and therefore initialized), else rotate_left was called with a wrong input
@@ -60,7 +60,7 @@ unsafe fn rotate_right<K, V>(raw_h: Link<K, V>) -> Link<K, V> {
     debug_assert!(raw_h.is_some());
     debug_assert!(Node::is_red(unsafe { raw_h?.as_ref().left }));
 
-    // SAFETY: raw_h is gurantted to be initialized, since it is Some else propagates
+    // SAFETY: raw_h is guaranteed to be initialized, since it is Some else propagates
     let h = unsafe { raw_h?.as_mut() };
     let raw_x = h.left;
     // SAFETY: raw_x must always be there (and therefore initialized), else rotate_left was called with a wrong input
@@ -220,7 +220,7 @@ unsafe fn balance<K, V>(mut raw_h: Link<K, V>) -> Link<K, V> {
 /// raw_h = put(raw_h, key, value);
 /// ```
 ///
-/// Doing so gurantees the invariant that all NonNulls are initialized, unless that invairant was already broken.
+/// Doing so guarantees the invariant that all NonNulls are initialized, unless that invariant was already broken.
 #[must_use]
 pub unsafe fn put<K: Ord, V>(
     raw_h: Link<K, V>,
@@ -244,8 +244,8 @@ pub unsafe fn put<K: Ord, V>(
     } else {
         // SAFETY: create an initialized node, box it and pack the raw pointer into a NonNull.
         // This allows for the use of Option :)
-        // Furthermore, since all nodes are ONLY created here, it gurantees all NonNulls to be initialized,
-        // until they're deleted, in which case that function must gurantee that invariant.
+        // Furthermore, since all nodes are ONLY created here, it guarantees all NonNulls to be initialized,
+        // until they're deleted, in which case that function must guarantee that invariant.
         unsafe {
             Some(NonNull::new_unchecked(Box::into_raw(Box::new(Node::new(
                 key, value,
@@ -267,7 +267,7 @@ pub unsafe fn put<K: Ord, V>(
 /// raw_h = delete_min(raw_h);
 /// ```
 ///
-/// Doing so gurantees the invariant that all NonNulls are initialized, unless that invairant was already broken.
+/// Doing so guarantees the invariant that all NonNulls are initialized, unless that invariant was already broken.
 #[must_use]
 pub unsafe fn delete_min<K: Ord, V>(mut raw_h: Link<K, V>) -> Link<K, V> {
     // SAFETY: handles raw pointers, that are assumed to be valid
@@ -279,17 +279,17 @@ pub unsafe fn delete_min<K: Ord, V>(mut raw_h: Link<K, V>) -> Link<K, V> {
             // To uphold the invariants required for proper use, the following requirements must be fulfilled:
             //
             // 1. If a right link exist it must be given to the parent of node. This *SHOULD* always be None to uphold Red-Black invariants.
-            // 2. This should always be a red link, and that is guranteed as long as the start call to delete_min is given a red link.
-            // Because then move_red_left continously moves the link red down as this function is recursively called.
+            // 2. This should always be a red link, and that is guaranteed as long as the start call to delete_min is given a red link.
+            // Because then move_red_left continuously moves the link red down as this function is recursively called.
             // 3. The value must be dropped appropriately to not leak any memory. To do this,
             // the raw pointer is returned to a Box and implicitly dropped.
             //
-            // As this is the one of the ONLY two place any value is dropped, it is guranteed to always uphold all invariants, if `raw_h` is always a red link.
+            // As this is the one of the ONLY two place any value is dropped, it is guaranteed to always uphold all invariants, if `raw_h` is always a red link.
             let _ = Box::from_raw(raw_h.unwrap().as_ptr());
             return None;
         }
 
-        // unwrap can be used, as node.left is guranteed to be some here (else None is returned by above if-statement)
+        // unwrap can be used, as node.left is guaranteed to be some here (else None is returned by above if-statement)
         if !Node::is_red(node.left)
             && !Node::is_red(node.left.unwrap().as_ref().left)
         {
@@ -317,7 +317,7 @@ pub unsafe fn delete_min<K: Ord, V>(mut raw_h: Link<K, V>) -> Link<K, V> {
 /// raw_h = delete_max(raw_h);
 /// ```
 ///
-/// Doing so gurantees the invariant that all NonNulls are initialized, unless that invairant was already broken.
+/// Doing so guarantees the invariant that all NonNulls are initialized, unless that invariant was already broken.
 #[must_use]
 pub unsafe fn delete_max<K: Ord, V>(mut raw_h: Link<K, V>) -> Link<K, V> {
     // SAFETY: handles raw pointers, that are assumed to be valid
@@ -333,17 +333,17 @@ pub unsafe fn delete_max<K: Ord, V>(mut raw_h: Link<K, V>) -> Link<K, V> {
             // To uphold the invariants required for proper use, the following requirements must be fulfilled:
             //
             // 1. If a left link exist it must be given to the parent of node. This *SHOULD* always be None to uphold Red-Black invariants.
-            // 2. This should always be a red link, and that is guranteed as long as the start call to delete_max is given a red link.
-            // Because then move_red_right continously moves the link red down as this function is recursively called.
+            // 2. This should always be a red link, and that is guaranteed as long as the start call to delete_max is given a red link.
+            // Because then move_red_right continuously moves the link red down as this function is recursively called.
             // 3. The value must be dropped appropriately to not leak any memory. To do this,
             // the raw pointer is returned to a Box and implicitly dropped.
             //
-            // As this is one of the ONLY two place any value is dropped, it is guranteed to always uphold all invariants, if `raw_h` is always a red link.
+            // As this is one of the ONLY two place any value is dropped, it is guaranteed to always uphold all invariants, if `raw_h` is always a red link.
             let _ = Box::from_raw(raw_h.unwrap().as_ptr());
             return None;
         }
 
-        // unwrap can be used, as node.right is guranteed to be some here (else None is returned by above if-statement)
+        // unwrap can be used, as node.right is guaranteed to be some here (else None is returned by above if-statement)
         if !Node::is_red(node.right)
             && !Node::is_red(node.right.unwrap().as_ref().left)
         {
@@ -372,7 +372,7 @@ pub unsafe fn delete_max<K: Ord, V>(mut raw_h: Link<K, V>) -> Link<K, V> {
 /// raw_h = delete(raw_h, &key);
 /// ```
 ///
-/// Doing so gurantees the invariant that all NonNulls are initialized, unless that invairant was already broken.
+/// Doing so guarantees the invariant that all NonNulls are initialized, unless that invariant was already broken.
 #[must_use]
 pub unsafe fn delete<K: Clone + Ord, V: Clone>(
     mut raw_h: Link<K, V>,
@@ -437,7 +437,7 @@ pub unsafe fn delete<K: Clone + Ord, V: Clone>(
 /// Must uphold RedBlack invariants and that Links that are Some must be initialized.
 pub fn min<K: Ord, V>(mut current: Link<K, V>) -> Link<K, V> {
     while current.is_some() {
-        // SAFETY: nodes are guranteed to be initialized,
+        // SAFETY: nodes are guaranteed to be initialized,
         // as this requires current to be Some (and therefore initialized)
         let node = unsafe { current.unwrap().as_ref() };
         if node.left.is_none() {
@@ -456,7 +456,7 @@ pub fn min<K: Ord, V>(mut current: Link<K, V>) -> Link<K, V> {
 /// Must uphold RedBlack invariants and that Links that are Some must be initialized.
 #[must_use]
 pub fn floor<K: Ord, V>(x: Link<K, V>, key: &K) -> Link<K, V> {
-    // SAFETY: nodes are guranteed to be initialized, as x would propagate None if x.is_none()
+    // SAFETY: nodes are guaranteed to be initialized, as x would propagate None if x.is_none()
     let node = unsafe { x?.as_ref() };
     match key.cmp(&node.key) {
         Ordering::Equal => x,
@@ -472,7 +472,7 @@ pub fn floor<K: Ord, V>(x: Link<K, V>, key: &K) -> Link<K, V> {
 /// Must uphold RedBlack invariants and that Links that are Some must be initialized.
 #[must_use]
 pub fn ceiling<K: Ord, V>(x: Link<K, V>, key: &K) -> Link<K, V> {
-    // SAFETY: nodes are guranteed to be initialized, as x would propagate None if x.is_none()
+    // SAFETY: nodes are guaranteed to be initialized, as x would propagate None if x.is_none()
     let node = unsafe { x?.as_ref() };
     match key.cmp(&node.key) {
         Ordering::Equal => x,
@@ -489,7 +489,7 @@ pub fn ceiling<K: Ord, V>(x: Link<K, V>, key: &K) -> Link<K, V> {
 #[must_use]
 pub fn rank<K: Ord, V>(x: Link<K, V>, key: &K) -> usize {
     if let Some(n) = x {
-        // SAFETY: nodes are guranteed to be initialized, as n is not None
+        // SAFETY: nodes are guaranteed to be initialized, as n is not None
         let node = unsafe { n.as_ref() };
         match key.cmp(&node.key) {
             Ordering::Less => rank(node.left, key),

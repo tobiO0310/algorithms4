@@ -28,7 +28,7 @@ impl UnionFind for QuickFind {
     fn union(&mut self, p: usize, q: usize) -> Result<(), UnionFindError> {
         let (pid, qid) = get_roots!(p, q, self);
 
-        // actually move over to the others LOL
+        // actually move over to the others
         for v in self.id.iter_mut() {
             if *v == pid {
                 *v = qid;

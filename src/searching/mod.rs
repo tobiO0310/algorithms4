@@ -18,9 +18,11 @@ mod bst;
 pub mod hash_table;
 mod sequential_search;
 
+use std::ops::Index;
+
 pub use bst::RedBlackBST;
 pub use hash_table::{
-    HashTable, LinearProbingHashTable, SeperateChainingHashTable,
+    HashTable, LinearProbingHashTable, SeparateChainingHashTable,
 };
 pub use sequential_search::SequentialSearch;
 
@@ -28,7 +30,9 @@ pub use sequential_search::SequentialSearch;
 /// and then later search for them efficiently.
 ///
 /// See implementations for further examples.
-pub trait SymbolTable<K, V>: IntoIterator<Item = (K, V)> {
+pub trait SymbolTable<K, V>:
+    IntoIterator<Item = (K, V)> + for<'a> Index<&'a K>
+{
     /// Adds a key and value to the [SymbolTable] if it does not already exist,
     /// else overrides the value associated with the key.
     fn put(&mut self, key: K, value: V);
@@ -62,8 +66,8 @@ pub trait SymbolTable<K, V>: IntoIterator<Item = (K, V)> {
 }
 
 /// An ordered symbol table extends a standard [SymbolTable].
-/// It allows ranking keys in comparision to each other, finding a key of `x` rank,
-/// alongside fidning the minimum and maximum keys inside the symbol table.
+/// It allows ranking keys in comparison to each other, finding a key of `x` rank,
+/// alongside finding the minimum and maximum keys inside the symbol table.
 ///
 /// See implementations for examples.
 pub trait OrderedSymbolTable<K: Ord, V>: SymbolTable<K, V> {
@@ -89,7 +93,8 @@ pub trait OrderedSymbolTable<K: Ord, V>: SymbolTable<K, V> {
     fn select(&self, rank: usize) -> Option<&K>;
     /// Returns the number of keys between `lo` and `hi`
     #[must_use]
-    fn size_betwen(&self, lo: &K, hi: &K) -> usize {
+    #[inline]
+    fn size_between(&self, lo: &K, hi: &K) -> usize {
         if hi < lo {
             0
         } else if self.contains(hi) {

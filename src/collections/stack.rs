@@ -1,4 +1,4 @@
-//! This module contains the code to create a simple Pushdown stack
+//! This module contains the code to create a simple Push-down stack
 
 use std::{
     cmp::Ordering,
@@ -53,7 +53,9 @@ impl<T> Stack<T> {
 
     /// Pushes an element onto the stack
     pub fn push(&mut self, elem: T) {
-        // SAFETY: linked lists, uhh :3
+        // SAFETY: adds a new link to the head, and update self.head to be this node.
+        // This upholds all invariants.
+
         unsafe {
             // creates the actual NonNull node
             let new = NonNull::new_unchecked(Box::into_raw(Box::new(Node {
@@ -71,8 +73,11 @@ impl<T> Stack<T> {
     /// Pops the last inserted element, if any exist
     #[must_use]
     pub fn pop(&mut self) -> Option<T> {
+        // SAFETY: when the head node is removed, the link is promptly replaced by a new (or None).
+        // This guarantees all invariants are upheld.
+
         unsafe {
-            // only do stuff if head actually exists lol
+            // only do stuff if head actually exists
 
             self.head.map(|node| {
                 // get the box black from the raw pointer and drop it at the end of this call :3
@@ -101,7 +106,6 @@ impl<T> Stack<T> {
     }
 
     /// Returns an iterator for the stack
-    #[must_use]
     pub fn iter(&'_ self) -> Iter<'_, T> {
         Iter {
             curr: self.head,
@@ -111,7 +115,6 @@ impl<T> Stack<T> {
     }
 
     /// Returns an iterator for the stack with mutable references instead
-    #[must_use]
     pub fn iter_mut(&'_ mut self) -> IterMut<'_, T> {
         IterMut {
             curr: self.head,

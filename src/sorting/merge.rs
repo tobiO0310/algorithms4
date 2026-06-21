@@ -131,7 +131,7 @@ impl MergeSort {
     /// Returns a permutation with elements from the array in a sorted order.
     ///
     /// It has the same time and space complexity as [MergeSort::top_down_sort].
-    #[must_use] // the result is the reason for calling this LOL
+    #[must_use] // the result is the reason for calling this
     pub fn index_sort<T: Ord>(arr: &[T]) -> Vec<usize> {
         let n = arr.len();
         let mut index = (0..n).collect::<Vec<_>>();

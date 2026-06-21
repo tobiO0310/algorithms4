@@ -47,14 +47,14 @@ impl<K, V> Node<K, V> {
 
     pub fn size(x: Link<K, V>) -> usize {
         match x {
-            // SAFETY: v is gurantted to be initialized, since it is Some
+            // SAFETY: v is guaranteed to be initialized, since it is Some
             Some(v) => unsafe { (*v.as_ptr()).size },
             _ => 0,
         }
     }
 
     pub fn is_red(x: Link<K, V>) -> bool {
-        // SAFETY: v is gurantted to be initialized, since it is Some
+        // SAFETY: v is guaranteed to be initialized, since it is Some
         x.is_some_and(|v| unsafe { v.as_ref().color == Color::Red })
     }
 }

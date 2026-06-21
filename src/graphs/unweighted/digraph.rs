@@ -3,7 +3,7 @@ use crate::{
     graphs::Graph,
 };
 
-/// An unweighted directed graph implemented with adjencency lists.
+/// An unweighted directed graph implemented with adjacency lists.
 ///
 /// The graph is made up of the graph vertex set *V* , containing `{0, 1, ..., V - 2, V - 1}`.
 /// Parallel edges and self-loops are permitted in this graph.
@@ -86,7 +86,7 @@ impl Graph for DirectedGraph {
 }
 
 /// The result from running [dfo].
-#[must_use = "Runnning Depth-First-Order is meaningless if result is ignored"]
+#[must_use = "Running Depth-First-Order is meaningless if result is ignored"]
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DFOResult(Queue<usize>, Queue<usize>, Stack<usize>, Vec<bool>);
 

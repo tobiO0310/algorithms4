@@ -30,6 +30,7 @@ impl<T> Bag<T> {
         self.data.is_empty()
     }
     /// Returns the amount of elements in the bag
+    #[must_use]
     pub fn len(&self) -> usize {
         self.data.len()
     }

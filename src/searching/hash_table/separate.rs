@@ -1,4 +1,4 @@
-//! This module holds a [SymbolTable] implemented as a Seperate Chaining Hash Table.
+//! This module holds a [SymbolTable] implemented as a Separate Chaining Hash Table.
 
 use std::{
     fmt::Debug,
@@ -13,33 +13,34 @@ use crate::{
 
 const INITIAL_CAPACITY: usize = 4;
 
-/// An unordered symbol table implemented as seperate-chaining hash table.
+/// An unordered symbol table implemented as separate-chaining hash table.
 ///
 /// # Examples
 ///
 /// ```
-/// # use algorithms4::{SeperateChainingHashTable, SymbolTable};
-/// let mut bst = SeperateChainingHashTable::new();
+/// # use algorithms4::{SeparateChainingHashTable, SymbolTable};
+/// let mut ht = SeparateChainingHashTable::new();
 ///
-/// bst.put("Test1", 1);
-/// bst.put("Test2", 2);
-/// bst.put("can", -10);
-/// bst.put("corn", 5);
+/// ht.put("Test1", 1);
+/// ht.put("Test2", 2);
+/// ht.put("can", -10);
+/// ht.put("corn", 5);
 ///
-/// assert_eq!(bst.get(&"corn"), Some(&5));
+/// assert_eq!(ht.get(&"corn"), Some(&5));
 /// ```
 #[derive(Debug, Default, Clone, PartialEq, Eq, PartialOrd, Ord)]
-pub struct SeperateChainingHashTable<K: Eq, V> {
+pub struct SeparateChainingHashTable<K: Eq, V> {
     st: Vec<SequentialSearch<K, V>>,
     amount: usize,
 }
 
 /// A shorthand for simpler typing.
-pub type HashTable<K, V> = SeperateChainingHashTable<K, V>;
+pub type HashTable<K, V> = SeparateChainingHashTable<K, V>;
 
-impl<K: Eq + Hash, V> SeperateChainingHashTable<K, V> {
+impl<K: Eq + Hash, V> SeparateChainingHashTable<K, V> {
     /// Initializes an empty symbol table.
     #[inline]
+    #[must_use]
     pub fn new() -> Self {
         Self::with_capacity_unchecked(INITIAL_CAPACITY)
     }
@@ -52,6 +53,7 @@ impl<K: Eq + Hash, V> SeperateChainingHashTable<K, V> {
     ///
     /// Panics if `amount` is 0
     #[inline]
+    #[must_use]
     pub fn with_capacity(mut amount: usize) -> Self {
         let prev_pow2 = 2usize.pow(amount.ilog2());
         let next_pow2 = amount.checked_next_power_of_two();
@@ -78,6 +80,7 @@ impl<K: Eq + Hash, V> SeperateChainingHashTable<K, V> {
     /// # Safety
     ///
     /// `amount` must be given in a power of 2, else the hashing breaks down
+    #[must_use]
     pub fn with_capacity_unchecked(amount: usize) -> Self {
         debug_assert!(amount.is_power_of_two());
         let mut st = Vec::with_capacity(amount);
@@ -86,7 +89,7 @@ impl<K: Eq + Hash, V> SeperateChainingHashTable<K, V> {
     }
 
     fn resize(&mut self, amount: usize) {
-        let mut temp = SeperateChainingHashTable::with_capacity(amount);
+        let mut temp = SeparateChainingHashTable::with_capacity(amount);
         for st in self.st.split_off(0) {
             for (key, value) in st {
                 temp.put(key, value);
@@ -106,7 +109,7 @@ impl<K: Eq + Hash, V> SeperateChainingHashTable<K, V> {
         h & (self.st.len() - 1)
     }
 
-    /// Returns an iterator over all the entries of this [SeperateChainingHashTable].
+    /// Returns an iterator over all the entries of this [SeparateChainingHashTable].
     pub fn iter<'a>(&'a self) -> Iter<'a, K, V>
     where
         K: 'a,
@@ -119,13 +122,14 @@ impl<K: Eq + Hash, V> SeperateChainingHashTable<K, V> {
     }
 }
 
-/// An iterator over a [SeperateChainingHashTable].
+/// An iterator over a [SeparateChainingHashTable].
+#[must_use = "iterators are lazy and do nothing on their own"]
 pub struct Iter<'a, K: Eq + Hash, V> {
-    table: &'a SeperateChainingHashTable<K, V>,
+    table: &'a SeparateChainingHashTable<K, V>,
     current: (usize, Box<dyn Iterator<Item = (&'a K, &'a V)> + 'a>),
 }
 
-impl<K: Eq + Hash, V> SymbolTable<K, V> for SeperateChainingHashTable<K, V> {
+impl<K: Eq + Hash, V> SymbolTable<K, V> for SeparateChainingHashTable<K, V> {
     fn put(&mut self, key: K, value: V) {
         if self.amount >= 10 * self.st.len() {
             self.resize(self.st.len() * 2);
@@ -167,7 +171,7 @@ impl<K: Eq + Hash, V> SymbolTable<K, V> for SeperateChainingHashTable<K, V> {
     }
 }
 
-impl<K: Eq + Hash, V> Index<&K> for SeperateChainingHashTable<K, V> {
+impl<K: Eq + Hash, V> Index<&K> for SeparateChainingHashTable<K, V> {
     type Output = V;
 
     #[inline]
@@ -200,7 +204,7 @@ impl<'a, K: Eq + Hash, V> Iterator for Iter<'a, K, V> {
         None
     }
 }
-impl<K: Eq, V> IntoIterator for SeperateChainingHashTable<K, V> {
+impl<K: Eq, V> IntoIterator for SeparateChainingHashTable<K, V> {
     type Item = (K, V);
     type IntoIter = queue::IntoIter<Self::Item>;
 
@@ -213,7 +217,7 @@ impl<K: Eq, V> IntoIterator for SeperateChainingHashTable<K, V> {
         queue.into_iter()
     }
 }
-impl<'a, K: Eq + Hash, V> IntoIterator for &'a SeperateChainingHashTable<K, V> {
+impl<'a, K: Eq + Hash, V> IntoIterator for &'a SeparateChainingHashTable<K, V> {
     type Item = (&'a K, &'a V);
     type IntoIter = Iter<'a, K, V>;
 
@@ -222,4 +226,4 @@ impl<'a, K: Eq + Hash, V> IntoIterator for &'a SeperateChainingHashTable<K, V> {
     }
 }
 
-super::test_hash_table!(SeperateChainingHashTable);
+super::test_hash_table!(SeparateChainingHashTable);

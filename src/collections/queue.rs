@@ -55,7 +55,9 @@ impl<T> Queue<T> {
 
     /// Enqueues the given element to this queue
     pub fn enqueue(&mut self, elem: T) {
-        // SAFETY: linked lists, am I right?
+        // SAFETY: adds a new link to the back, and update self.back to be this node.
+        // Also make sure front is set, if there was none before. This upholds all invariants.
+
         unsafe {
             // creates the actual NonNull node
             let new = NonNull::new_unchecked(Box::into_raw(Box::new(Node {
@@ -80,7 +82,8 @@ impl<T> Queue<T> {
     /// Dequeues the last inserted element from this queue, if it exists
     #[must_use]
     pub fn dequeue(&mut self) -> Option<T> {
-        // SAFETY: uhh linked lists again LOL
+        // SAFETY: when the front node is removed, the link is promptly replaced by a new (or None).
+        // This guarantees all invariants are upheld.
         unsafe {
             self.front.map(|node| {
                 // get the box black from the raw pointer and drop it at the end of this call :3
@@ -117,7 +120,6 @@ impl<T> Queue<T> {
     }
 
     /// Returns an iterator for the queue
-    #[must_use]
     pub fn iter(&'_ self) -> Iter<'_, T> {
         Iter {
             curr: self.front,
@@ -127,7 +129,6 @@ impl<T> Queue<T> {
     }
 
     /// Returns an iterator for the queue with mutable references instead
-    #[must_use]
     pub fn iter_mut(&'_ mut self) -> IterMut<'_, T> {
         IterMut {
             curr: self.front,

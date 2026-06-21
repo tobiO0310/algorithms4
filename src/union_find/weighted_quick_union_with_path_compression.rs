@@ -46,7 +46,7 @@ impl UnionFind for WeightedQuickUnionWPC {
     ///
     /// This runs in `O(log* n)` time, where `log*` is the iterated logarithm.
     /// For any `n` in the range `(65.536, 2^65.536]` `lg*(n) = 5`.
-    /// Therefore, it can reasonbly be handled as if it's `O(1)`.
+    /// Therefore, it can reasonably be handled as if it's `O(1)`.
     fn find(&mut self, p: usize) -> Option<usize> {
         find!(pc p, self.id)
     }

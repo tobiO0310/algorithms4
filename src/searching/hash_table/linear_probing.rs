@@ -16,14 +16,14 @@ const INITIAL_CAPACITY: usize = 4;
 ///
 /// ```
 /// # use algorithms4::{LinearProbingHashTable, SymbolTable};
-/// let mut bst = LinearProbingHashTable::new();
+/// let mut ht = LinearProbingHashTable::new();
 ///
-/// bst.put("Test1", 1);
-/// bst.put("Test2", 2);
-/// bst.put("can", -10);
-/// bst.put("corn", 5);
+/// ht.put("Test1", 1);
+/// ht.put("Test2", 2);
+/// ht.put("can", -10);
+/// ht.put("corn", 5);
 ///
-/// assert_eq!(bst.get(&"corn"), Some(&5));
+/// assert_eq!(ht.get(&"corn"), Some(&5));
 /// ```
 #[derive(Debug, Default)]
 pub struct LinearProbingHashTable<K, V> {
@@ -39,6 +39,7 @@ enum Checks<'a, K, V> {
 }
 
 /// An iterator for a [LinearProbingHashTable].
+#[must_use = "iterators are lazy and do nothing on their own"]
 pub struct Iter<'a, K, V> {
     items: &'a Vec<Option<SearchingNode<K, V>>>,
     current: usize,
@@ -46,17 +47,19 @@ pub struct Iter<'a, K, V> {
 
 impl<K: Hash + Eq, V> LinearProbingHashTable<K, V> {
     /// Initializes an empty symbol table.
+    #[must_use]
     pub fn new() -> Self {
         Self::with_capacity_unchecked(INITIAL_CAPACITY)
     }
 
-    /// Initializes an empty symbol table with an amount of preallocated spaces.
+    /// Initializes an empty symbol table with an amount of pre-allocated spaces.
     ///
     /// `amount` will be rounded to nearest power of 2.
     ///
     /// # Panics
     ///
     /// Panics if `amount` is 0
+    #[must_use]
     pub fn with_capacity(mut amount: usize) -> Self {
         let prev_pow2 = 2usize.pow(amount.ilog2());
         let next_pow2 = amount.checked_next_power_of_two();
@@ -74,7 +77,7 @@ impl<K: Hash + Eq, V> LinearProbingHashTable<K, V> {
         Self::with_capacity_unchecked(amount)
     }
 
-    /// Initializes an empty symbol table with an amount of preallocated spaces.
+    /// Initializes an empty symbol table with an amount of pre-allocated spaces.
     ///
     /// # Panics
     ///
@@ -83,6 +86,7 @@ impl<K: Hash + Eq, V> LinearProbingHashTable<K, V> {
     /// # Safety
     ///
     /// `amount` must be given in a power of 2, else the hashing breaks down
+    #[must_use]
     pub fn with_capacity_unchecked(amount: usize) -> Self {
         let mut items = Vec::with_capacity(amount);
         items.resize_with(amount, || None);

@@ -78,6 +78,7 @@ impl DynamicUnionFind {
     }
 
     /// Returns the amount of vertices currently active
+    #[must_use]
     pub fn vertices(&self) -> usize {
         self.id.len()
     }

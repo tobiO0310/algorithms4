@@ -54,6 +54,7 @@ impl<K: Ord> PriorityQueue<K, fn(&K, &K) -> cmp::Ordering> {
     /// Initializes an empty priority queue.
     ///
     /// Uses the default natural ordering of K.
+    #[must_use]
     pub fn new() -> Self {
         Self {
             heap: Vec::new(),
@@ -70,6 +71,7 @@ where
     /// Initializes an empty priority queue.
     ///
     /// Uses the given comparator function to compare any two values.
+    #[must_use]
     pub fn with_comparator(comparator: F) -> Self {
         Self {
             heap: Vec::new(),
@@ -78,13 +80,16 @@ where
     }
 
     /// Returns the number of keys on this priority queue.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.heap.len()
     }
 
     /// Returns true if this priority queue is empty.
+    #[must_use]
+    #[inline(always)]
     pub fn is_empty(&self) -> bool {
-        self.heap.len() == 0
+        self.len() == 0
     }
 
     /// Adds a new key to this priority queue.
@@ -94,11 +99,13 @@ where
     }
 
     /// Peeks at the priority queue for the next element to be removed.
+    #[must_use]
     pub fn peek(&self) -> Option<&K> {
         self.heap.first()
     }
 
     /// Removes and returns a smallest key on this priority queue.
+    #[must_use]
     pub fn pop(&mut self) -> Option<K> {
         if self.is_empty() {
             return None;
@@ -107,7 +114,7 @@ where
         self.heap.swap(0, n);
         let key = self.heap.pop()?;
         self.sink(0);
-        debug_assert!(self.is_heap_orderd(0));
+        debug_assert!(self.is_heap_ordered(0));
 
         Some(key)
     }
@@ -137,7 +144,7 @@ where
         (self.comparator)(&self.heap[i], &self.heap[j]).is_lt()
     }
 
-    fn is_heap_orderd(&self, pos: usize) -> bool {
+    fn is_heap_ordered(&self, pos: usize) -> bool {
         if pos > self.heap.len() {
             return true;
         }
@@ -149,11 +156,12 @@ where
             return false;
         }
 
-        self.is_heap_orderd(left) && self.is_heap_orderd(right)
+        self.is_heap_ordered(left) && self.is_heap_ordered(right)
     }
 }
 
 /// The iterator of the consumed item
+#[must_use = "iterators are lazy and do nothing on their own"]
 pub struct IntoIter<K, F>
 where
     K: Ord,

@@ -13,12 +13,14 @@ pub struct SequentialSearch<K: Eq, V> {
 }
 
 /// An iterator for &[SequentialSearch].
+#[must_use = "iterators are lazy and do nothing on their own"]
 pub struct Iter<'a, K, V> {
     queue: queue::Iter<'a, SearchingNode<K, V>>,
 }
 
 impl<K: Eq, V> SequentialSearch<K, V> {
-    /// Instansiate a new [SequentialSearch] object
+    /// Instantiate a new [SequentialSearch] object
+    #[must_use]
     pub fn new() -> Self {
         Self {
             queue: Queue::new(),

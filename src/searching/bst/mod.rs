@@ -16,7 +16,7 @@ use crate::{
 
 /// An ordered symbol table implemented as left-leaning red-black 2-3 search tree.
 ///
-/// This has a guranteed O(log *n*) running time for [RedBlackBST::get], [RedBlackBST::put] & [RedBlackBST::delete],
+/// This has a guaranteed O(log *n*) running time for [RedBlackBST::get], [RedBlackBST::put] & [RedBlackBST::delete],
 /// alongside most ordered operations.
 /// Iteration and [RedBlackBST::clear] takes O(*n* log *n*).
 ///
@@ -56,7 +56,7 @@ impl fmt::Display for Checks {
 impl Error for Checks {}
 
 impl<K: Ord, V> RedBlackBST<K, V> {
-    /// Initialises a new Binary Search Tree
+    /// Initialize a new Binary Search Tree
     #[must_use]
     pub fn new() -> Self {
         Self {
@@ -122,7 +122,7 @@ impl<K: Ord, V> RedBlackBST<K, V> {
         }
     }
 
-    /// Indicates whehter the sub-tree is actually symmetric and within the correct min and max?
+    /// Indicates whether the sub-tree is actually symmetric and within the correct min and max?
     ///
     /// If `min` or `max` is [None], it is treated as unbounded.
     ///
@@ -255,7 +255,7 @@ impl<K: Ord, V> RedBlackBST<K, V> {
 /// where `lo <= key <= hi` according to the natural order.
 fn into_iter_entries<K: Ord, V>(x: Link<K, V>, queue: &mut Queue<(K, V)>) {
     if let Some(n) = x {
-        // SAFETY: as long as x.is_some(), x is guranteed to be initialized
+        // SAFETY: as long as x.is_some(), x is guaranteed to be initialized
         let node = unsafe { Box::from_raw(n.as_ptr()) };
 
         into_iter_entries(node.left, queue);
@@ -273,7 +273,7 @@ fn iter_entries<K: Ord, V>(
     hi: &K,
 ) {
     if let Some(n) = x {
-        // SAFETY: as long as x.is_some(), x is guranteed to be initialized
+        // SAFETY: as long as x.is_some(), x is guaranteed to be initialized
         let node = unsafe { &*n.as_ptr() };
         let cmp_lo = lo.cmp(&node.key);
         let cmp_hi = hi.cmp(&node.key);
@@ -308,7 +308,7 @@ impl<K: Ord, V> SymbolTable<K, V> for RedBlackBST<K, V> {
         let mut current = self.root;
         // while the direction to the searched key exists
         while current.is_some() {
-            // SAFETY: nodes are guranteed to be initialized, IF current.is_some()
+            // SAFETY: nodes are guaranteed to be initialized, IF current.is_some()
             // Because they are only created in put method
             let node = unsafe { &*current?.as_ptr() };
             match key.cmp(&node.key) {
@@ -331,7 +331,7 @@ impl<K: Ord, V> SymbolTable<K, V> for RedBlackBST<K, V> {
             // don't try to remove it
         }
 
-        // SAFETY: at this point, self.root is Some, and therefore is guranteed to be initialized
+        // SAFETY: at this point, self.root is Some, and therefore is guaranteed to be initialized
         unsafe {
             // if both children of root are black, set root to red
             let root = self.root.unwrap().as_mut();
@@ -372,7 +372,7 @@ impl<K: Ord, V> OrderedSymbolTable<K, V> for RedBlackBST<K, V> {
             // (there cannot be any)
         }
 
-        // SAFETY: at this point, self.root is Some, and therefore is guranteed to be initialized
+        // SAFETY: at this point, self.root is Some, and therefore is guaranteed to be initialized
         unsafe {
             // if both children of root are black, set root to red
             let root = self.root.unwrap().as_mut();
@@ -403,7 +403,7 @@ impl<K: Ord, V> OrderedSymbolTable<K, V> for RedBlackBST<K, V> {
             // (there cannot be any)
         }
 
-        // SAFETY: at this point, self.root is Some, and therefore is guranteed to be initialized
+        // SAFETY: at this point, self.root is Some, and therefore is guaranteed to be initialized
         unsafe {
             // if both children of root are black, set root to red
             let root = self.root.unwrap().as_mut();
@@ -424,15 +424,15 @@ impl<K: Ord, V> OrderedSymbolTable<K, V> for RedBlackBST<K, V> {
     }
 
     fn min(&self) -> Option<&K> {
-        // SAFETY: as long as min(self.root) is some (guranteed by try operator),
-        // it is guranteed to be initialized, and key can therefore be referenced
+        // SAFETY: as long as min(self.root) is some (guaranteed by try operator),
+        // it is guaranteed to be initialized, and key can therefore be referenced
         unsafe { Some(&(*min(self.root)?.as_ptr()).key) }
     }
 
     fn max(&self) -> Option<&K> {
         let mut current = self.root;
         while current.is_some() {
-            // SAFETY: nodes are guranteed to be initialized,
+            // SAFETY: nodes are guaranteed to be initialized,
             // as this requires current to be Some (and therefore initialized)
             let node = unsafe { current.unwrap().as_ref() };
             if node.right.is_none() {
@@ -446,13 +446,13 @@ impl<K: Ord, V> OrderedSymbolTable<K, V> for RedBlackBST<K, V> {
 
     fn floor(&self, key: &K) -> Option<&K> {
         // SAFETY: if floor(self.root) == None, it propagates None,
-        // else floor(self.root) is guranteed to be initialized
+        // else floor(self.root) is guaranteed to be initialized
         unsafe { Some(&(*floor(self.root, key)?.as_ptr()).key) }
     }
 
     fn ceiling(&self, key: &K) -> Option<&K> {
         // SAFETY: if ceiling(self.root) == None, it propagates None,
-        // else ceiling(self.root) is guranteed to be initialized
+        // else ceiling(self.root) is guaranteed to be initialized
         unsafe { Some(&(*ceiling(self.root, key)?.as_ptr()).key) }
     }
 
@@ -463,7 +463,7 @@ impl<K: Ord, V> OrderedSymbolTable<K, V> for RedBlackBST<K, V> {
     fn select(&self, mut rank: usize) -> Option<&K> {
         let mut current = self.root;
         while current.is_some() {
-            // SAFETY: nodes are guranteed to be initialized, as x would propagate None if x.is_none()
+            // SAFETY: nodes are guaranteed to be initialized, as x would propagate None if x.is_none()
             let node = unsafe { current?.as_ref() };
             let t = Node::size(node.left);
             match t.cmp(&rank) {
@@ -494,7 +494,7 @@ impl<K: Ord, V> OrderedSymbolTable<K, V> for RedBlackBST<K, V> {
 /// ```
 fn drop_tree<K, V>(link: Link<K, V>) {
     if let Some(mut node) = link {
-        // SAFETY: as long as node is not None, it is guranteed to be initialized
+        // SAFETY: as long as node is not None, it is guaranteed to be initialized
         unsafe {
             let node_ref = node.as_mut();
             drop_tree(node_ref.left.take());
