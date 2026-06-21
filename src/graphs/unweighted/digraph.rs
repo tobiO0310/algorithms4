@@ -72,21 +72,14 @@ impl Graph for DirectedGraph {
             node[shape=circle, style=filled, fixedsize=true, width=0.3, fontsize=\"10pt\"]"
         );
 
-        let mut self_loop = false;
         for v in 0..self.vertices {
             for &w in self.adjacent[v].iter() {
-                if v < w {
-                    str.push_str(format!("{:?} -- {:?}\n", v, w).as_str());
-                } else if v == w {
-                    // include only one copy of each self loop (self loops will be consecutive)
-                    if !self_loop {
-                        str.push_str(format!("{:?} -- {:?}\n", v, w).as_str());
-                    }
-                    self_loop = !self_loop;
+                if v <= w {
+                    str.push_str(format!("{:?} -> {:?}\n", v, w).as_str());
                 }
             }
         }
-        str.push_str("}\na");
+        str.push_str("}\n");
 
         str
     }

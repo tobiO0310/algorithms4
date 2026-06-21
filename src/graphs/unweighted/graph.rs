@@ -72,7 +72,7 @@ impl Graph for UndirectedGraph {
                 }
             }
         }
-        str.push_str("}\na");
+        str.push_str("}\n");
 
         str
     }

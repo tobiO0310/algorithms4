@@ -66,6 +66,33 @@ impl EdgeWeightedGraph<WeightedEdge> for WeightedGraph {
         }
         bag.into_iter()
     }
+    
+    fn to_dot(&self) -> String {
+        let mut str = String::new();
+        str.push_str(
+            "digraph {
+            node[shape=circle, style=filled, fixedsize=true, width=0.3, fontsize=\"10pt\"]"
+        );
+
+        let mut self_loop = false;
+        for v in 0..self.vertices {
+            for &e in self.adjacent[v].iter() {
+                let w = e.other(v);
+                if v < w {
+                    str.push_str(format!("{:?} -- {:?} [weight={:?}]\n", v, w, e.weight()).as_str());
+                } else if v == w {
+                    // include only one copy of each self loop (self loops will be consecutive)
+                    if !self_loop {
+                        str.push_str(format!("{:?} -- {:?} [weight={:?}]\n", v, w, e.weight()).as_str());
+                    }
+                    self_loop = !self_loop;
+                }
+            }
+        }
+        str.push_str("}\n");
+
+        str
+    }
 }
 
 /// A weighted directed graph implemented with adjencency lists.
@@ -171,5 +198,25 @@ impl EdgeWeightedGraph<WeightedDirectedEdge> for WeightedDiGraph {
             }
         }
         bag.into_iter()
+    }
+
+    fn to_dot(&self) -> String {
+        let mut str = String::new();
+        str.push_str(
+            "graph {
+            node[shape=circle, style=filled, fixedsize=true, width=0.3, fontsize=\"10pt\"]"
+        );
+
+        for v in 0..self.vertices {
+            for &e in self.adjacent[v].iter() {
+                let w = e.to();
+                if v <= w {
+                    str.push_str(format!("{:?} -> {:?} [weight={:}]\n", v, w, e.weight()).as_str());
+                }
+            }
+        }
+        str.push_str("}\n");
+
+        str
     }
 }

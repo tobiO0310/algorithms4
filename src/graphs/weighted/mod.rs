@@ -48,6 +48,27 @@ pub trait EdgeWeightedGraph<T> {
 
     /// Returns an iterator over all edges
     fn all_edges(&self) -> impl Iterator<Item = T>;
+
+    /// Returns a string representation of this graph in DOT format,
+    /// which can be used to visualize it with Graphviz.
+    ///
+    /// To visualize the graph, install Graphviz (e.g., `brew install graphviz`).
+    /// Then use one of the graph visualization tools
+    ///    - dot    (hierarchical or layer drawing)
+    ///    - neato  (spring model)
+    ///    - fdp    (force-directed placement)
+    ///    - sfdp   (scalable force-directed placement)
+    ///    - twopi  (radial layout)
+    ///
+    /// For example, the following commands will create graph drawings in SVG
+    /// and PDF formats
+    ///    - `dot input.dot -Tsvg -o output.svg`
+    ///    - `dot input.dot -Tpdf -o output.pdf`
+    ///
+    /// To change the graph attributes (e.g., vertex and edge shapes, arrows, colors)
+    ///  in the DOT format, see <https://graphviz.org/doc/info/lang.html>
+    #[must_use]
+    fn to_dot(&self) -> String;
 }
 
 /// Smaller numbers are given as [Ordering::Greater] (used to find smallest edge weights)
