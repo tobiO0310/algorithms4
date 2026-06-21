@@ -56,6 +56,15 @@ impl<T> FromIterator<T> for Bag<T> {
     }
 }
 
+impl<T> IntoIterator for Bag<T> {
+    type Item = T;
+    type IntoIter = linked_list::IntoIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.data.into_iter()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
