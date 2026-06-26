@@ -7,6 +7,7 @@ pub mod collections;
 pub mod graphs;
 pub mod searching;
 pub mod sorting;
+pub mod strings;
 pub mod union_find;
 mod utilities;
 
