@@ -2,3 +2,5 @@
 
 mod sorting;
 pub use sorting::Sorting;
+
+const ASCII_SIZE: usize = 256;

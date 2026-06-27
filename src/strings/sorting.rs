@@ -1,7 +1,8 @@
+use super::ASCII_SIZE;
+
 /// This holds three different string-only sorting algorithms.
 pub struct Sorting;
 
-const ASCII_SIZE: usize = 256;
 const INSERTION_CUTOFF: usize = 15;
 
 /// Returns the UTF-8 byte at `d`, or -1 if `d == s.len()`
@@ -48,9 +49,9 @@ fn msd_sort<'a>(arr: &mut [&'a str], d: usize, aux: &mut [&'a str]) {
     }
 
     let mut count = vec![0; ASCII_SIZE + 2];
-    for i in 0..arr.len() {
+    for str in arr.iter() {
         // Compute frequency counts
-        count[char_at(arr[i], d) as usize + 2] += 1;
+        count[char_at(str, d) as usize + 2] += 1;
     }
 
     for r in 0..(ASCII_SIZE + 1) {
@@ -58,17 +59,14 @@ fn msd_sort<'a>(arr: &mut [&'a str], d: usize, aux: &mut [&'a str]) {
         count[r + 1] += count[r];
     }
 
-    for i in 0..arr.len() {
+    for str in arr.iter() {
         // Distribute
-        let char = char_at(arr[i], d) as usize + 1;
-        aux[count[char]] = arr[i];
+        let char = char_at(str, d) as usize + 1;
+        aux[count[char]] = str;
         count[char] += 1;
     }
 
-    for i in 0..arr.len() {
-        // Copy back
-        arr[i] = aux[i];
-    }
+    arr.copy_from_slice(&aux[..arr.len()]);
 
     for r in 0..ASCII_SIZE {
         msd_sort(
@@ -138,18 +136,17 @@ impl Sorting {
     /// This also means, that since UTF-8 is variable length for non-standard ASCII characters,
     /// the actual string length for these characters may differ between strings.
     pub fn lsd_sort(arr: &mut [&str]) {
-        let len = arr.len(); // N
-        if len == 0 {
+        if arr.is_empty() {
             return;
         }
 
-        let mut aux = vec![None; len];
+        let mut aux = vec![None; arr.len()];
         let str_len = arr[0].len(); // W
         for d in (0..str_len).rev() {
             let mut count = vec![0; ASCII_SIZE + 1];
-            for i in 0..len {
+            for str in arr.iter() {
                 // Compute frequency counts
-                let char = arr[i].as_bytes()[d] as usize;
+                let char = str.as_bytes()[d] as usize;
                 count[char + 1] += 1;
             }
 
@@ -158,14 +155,14 @@ impl Sorting {
                 count[r + 1] += count[r];
             }
 
-            for i in 0..len {
+            for str in arr.iter() {
                 // Distribute
-                let char = arr[i].as_bytes()[d] as usize;
-                aux[count[char]] = Some(arr[i]);
+                let char = str.as_bytes()[d] as usize;
+                aux[count[char]] = Some(*str);
                 count[char] += 1;
             }
 
-            for i in 0..len {
+            for i in 0..arr.len() {
                 // Copy back
                 arr[i] = aux[i].unwrap();
             }
@@ -193,16 +190,16 @@ impl Sorting {
     /// # assert_eq!(arr, vec!["are", "by", "sea", "seashells", "seashells", "sells", "sells", "she", "she", "shells", "shore", "surely", "the", "the"]);
     /// ```
     pub fn msd_sort(arr: &mut [&str]) {
-        let mut aux = arr.iter().copied().collect::<Vec<_>>();
+        let mut aux = arr.to_vec();
         msd_sort(arr, 0, &mut aux);
     }
 
     /// Rearranges the array of same length strings in ascending order
     /// with 3-way quick string sort.
-    /// 
+    ///
     /// This sorting is stable, and has a running time between O(*N*) and O(*N* *w*) and uses &Theta;(1) extra space
     /// to sort N strings, where *w* is the average amount of characters in each string.
-    /// 
+    ///
     /// # Example
     ///
     /// ```
