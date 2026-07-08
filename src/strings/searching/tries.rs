@@ -5,12 +5,11 @@ use crate::strings::searching::ternary::TernarySearchTrie;
 use crate::{
     SymbolTable,
     collections::{Queue, queue},
-    strings::{ASCII_SIZE, searching::StringSymbolTable},
+    strings::{ASCII_SIZE, char_at, searching::StringSymbolTable},
 };
 
 const R: usize = ASCII_SIZE;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 struct Node<V> {
     val: Option<V>,
     next: [Link<V>; R],
@@ -29,31 +28,35 @@ impl<V> Node<V> {
 }
 
 type Link<V> = Option<NonNull<Node<V>>>;
-fn drop_link<V>(x: Link<V>) {
+/// # Safety
+///
+/// The link given to this function must never be used again. Example usage:
+/// ```
+/// # fn drop_link(x: Option<i8>) { }
+/// # let mut x = Some(0);
+/// drop_link(x.take());
+unsafe fn drop_link<V>(x: Link<V>) {
     if let Some(x) = x {
         let x = unsafe { Box::from_raw(x.as_ptr()) };
         for l in x.next {
-            drop_link(l);
+            // SAFETY: l's ref in memory will be dropped as x is dropped,
+            // thereby making sure those links are no longer valid (and follow invariants)
+            unsafe { drop_link(l) };
         }
     }
 }
 
-fn char_at(s: &str, d: usize) -> i16 {
-    if d >= s.len() {
-        -1
-    } else {
-        s.as_bytes()[d] as i16
+fn get<V>(mut x: Link<V>, key: &str, mut d: usize) -> Link<V> {
+    // keep following the links until d is max index in key
+    // (if any links are None, ? will return None)
+    while d < key.len() {
+        // SAFETY: all links are valid, as long as they're Some (as they are ONLY created in Node::new)
+        let node = unsafe { x?.as_ref() };
+        x = node.next[char_at(key, d) as usize];
+        d += 1;
     }
-}
 
-fn get<V>(x: Link<V>, key: &str, d: usize) -> Link<V> {
-    // SAFETY: all links are valid, as long as they're Some (as they are ONLY created in Node::new)
-    let node = unsafe { x?.as_ref() };
-    if d == key.len() {
-        x
-    } else {
-        get(node.next[char_at(key, d) as usize], key, d + 1)
-    }
+    x
 }
 
 fn collect<V>(x: Link<V>, s: String, iter_q: &mut Queue<(String, &V)>) {
@@ -101,7 +104,7 @@ fn collect_pat<V>(
 
         let next = char_at(pat, str.len()) as usize;
         for c in 0..R {
-            if (next == b"."[0] as usize || next == c) && x.next[c].is_some() {
+            if (next == b'.' as usize || next == c) && x.next[c].is_some() {
                 queue.enqueue((
                     str.clone()
                         + &String::from_utf8(vec![c as u8])
@@ -213,7 +216,7 @@ unsafe fn delete<V>(x: Link<V>, key: &String, d: usize) -> Link<V> {
 
 /// This [SymbolTable] implementation is a 256-way Trie for string-key-based symbol tables.
 /// This is often a more performant option, however it does require a lot more memory
-/// to store all the 256 sized arrays. Should memory be a limit, checkout a [TernarySearchTrie].
+/// to store all the 256 sized arrays. Should memory be a limit, checkout [TernarySearchTrie].
 ///
 /// The *put*, *contains*, *delete*, and *longest prefix* operations
 /// take time proportional to the length of the key (in the worst case).
@@ -236,7 +239,6 @@ impl<V> Trie<V> {
     }
 
     /// Returns an iterator over this
-    #[must_use]
     pub fn iter(&self) -> queue::IntoIter<(String, &V)> {
         let mut q = Queue::new();
         collect(get(self.root, "", 0), "".into(), &mut q);
@@ -300,7 +302,8 @@ impl<V> SymbolTable<String, V> for Trie<V> {
     }
 
     fn clear(&mut self) {
-        drop_link(self.root.take());
+        // SAFETY: called correctly, making sure root is made into None.
+        unsafe { drop_link(self.root.take()) };
         self.size = 0;
     }
 
@@ -367,7 +370,8 @@ impl<'a, V> Index<&'a str> for Trie<V> {
 
 impl<V> Drop for Trie<V> {
     fn drop(&mut self) {
-        drop_link(self.root.take());
+        // SAFETY: called correctly, making sure root is removed
+        unsafe { drop_link(self.root.take()) };
     }
 }
 impl<V: Clone> Clone for Trie<V> {
@@ -405,147 +409,4 @@ impl<V: fmt::Debug> fmt::Debug for Trie<V> {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn vec(size: usize) -> Vec<String> {
-        let mut vec = Vec::with_capacity(size);
-        for i in 0..size {
-            vec.push(i.to_string());
-        }
-        vec
-    }
-
-    #[test]
-    fn it_works() {
-        let mut trie1 = Trie::new();
-        const SIZE: usize = 100;
-
-        assert_eq!(trie1.size, 0);
-        assert!(trie1.is_empty());
-
-        let vec = vec(SIZE);
-        for (i, str) in vec.iter().enumerate() {
-            trie1.put(str.clone(), str.clone());
-            assert_eq!(trie1.size, i + 1);
-        }
-
-        assert_eq!(trie1.size, SIZE);
-        assert!(!trie1.is_empty());
-
-        for str in &vec {
-            assert_eq!(trie1.get(str), Some(str));
-            assert_eq!(&trie1[str], str);
-        }
-
-        let trie2 = trie1.clone();
-        assert_eq!(trie1, trie2);
-        let mut trie3 = trie2.into_iter().collect();
-        assert_eq!(trie1, trie3);
-
-        trie3.clear();
-        assert_eq!(trie3.size, 0);
-        assert!(trie3.is_empty());
-
-        for (i, str) in vec.iter().enumerate().rev() {
-            trie1.delete(str);
-            assert_eq!(trie1.size, i);
-        }
-
-        assert_eq!(trie1.size, 0);
-        assert!(trie1.is_empty());
-
-        for str in &vec {
-            trie1.delete(str);
-            assert_eq!(trie1.size, 0);
-            assert!(trie1.is_empty());
-        }
-    }
-
-    #[test]
-    fn patterns_work() {
-        let mut trie = Trie::new();
-        const SIZE: usize = 100;
-
-        assert_eq!(trie.size, 0);
-        assert!(trie.is_empty());
-
-        let vec = vec(SIZE);
-        for (i, str) in vec.iter().enumerate() {
-            trie.put(str.clone(), str.clone());
-            assert_eq!(trie.size, i + 1);
-        }
-
-        assert_eq!(trie.entries_that_match("").collect::<Vec<_>>().len(), 0);
-        assert_eq!(trie.entries_that_match(".").collect::<Vec<_>>().len(), 10);
-        assert_eq!(trie.entries_that_match("..").collect::<Vec<_>>().len(), 90);
-        for i in 0..SIZE {
-            assert_eq!(
-                trie.entries_that_match(&i.to_string())
-                    .collect::<Vec<_>>()
-                    .len(),
-                1
-            );
-        }
-    }
-
-    #[test]
-    fn prefixes_work() {
-        let mut trie = Trie::new();
-        const SIZE: usize = 100;
-
-        assert_eq!(trie.size, 0);
-        assert!(trie.is_empty());
-
-        let vec = vec(SIZE);
-        for (i, str) in vec.iter().enumerate() {
-            trie.put(str.clone(), str.clone());
-            assert_eq!(trie.size, i + 1);
-        }
-
-        assert_eq!(
-            trie.entries_with_prefix("").collect::<Vec<_>>().len(),
-            SIZE
-        );
-        for i in 1..=9 {
-            assert_eq!(
-                trie.entries_with_prefix(&i.to_string())
-                    .collect::<Vec<_>>()
-                    .len(),
-                11
-            );
-        }
-    }
-
-    #[test]
-    fn longest_prefix() {
-        let mut trie = Trie::new();
-        const SIZE: usize = 100;
-
-        assert_eq!(trie.size, 0);
-        assert!(trie.is_empty());
-
-        let vec = vec(SIZE);
-        for (i, str) in vec.iter().enumerate() {
-            trie.put(str.clone(), str.clone());
-            assert_eq!(trie.size, i + 1);
-        }
-
-        for str in &vec {
-            assert_eq!(&trie.longest_prefix_of(str), str);
-        }
-
-        assert_eq!(trie.longest_prefix_of("166"), "16".to_string());
-        assert_eq!(trie.longest_prefix_of("248"), "24".to_string());
-        assert_eq!(trie.longest_prefix_of("325"), "32".to_string());
-        assert_eq!(trie.longest_prefix_of("487"), "48".to_string());
-        assert_eq!(trie.longest_prefix_of("534"), "53".to_string());
-        assert_eq!(trie.longest_prefix_of("611"), "61".to_string());
-        assert_eq!(trie.longest_prefix_of("752"), "75".to_string());
-        assert_eq!(trie.longest_prefix_of("873"), "87".to_string());
-        assert_eq!(trie.longest_prefix_of("999"), "99".to_string());
-        
-        assert_eq!(trie.longest_prefix_of("a"), "".to_string());
-    }    
-}
+super::test_string_table!(Trie);
