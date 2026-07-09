@@ -11,6 +11,7 @@ repository = "https://github.com/tobiO0310/algorithms4"
 keywords = ["algorithms", "algs4"]
 
 [dependencies]
+miller_rabin = "1.1.1"
 rand = "0.10.1"
 
 [profile.release]

@@ -1,7 +1,11 @@
 use crate::SymbolTable;
 
+mod substring;
 mod ternary;
 mod tries;
+pub use substring::{
+    BoyerMoorePattern, KMPPattern, RabinKarp, SubstringSearch,
+};
 pub use ternary::TernarySearchTrie;
 pub use tries::Trie;
 
