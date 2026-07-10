@@ -50,7 +50,7 @@ type Link<V> = Option<NonNull<Node<V>>>;
 /// The link given MUST not be used again, as the link will be made Null. Call like so:
 /// ```
 /// # fn drop_link(x: Option<i32>) {};
-/// # let x = Some(1);
+/// # let mut x = Some(1);
 /// drop_link(x.take());
 /// ```
 unsafe fn drop_link<V>(x: Link<V>) {
