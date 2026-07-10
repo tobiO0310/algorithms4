@@ -88,5 +88,8 @@ pub fn is_prime<T: ToBigUint>(n: &T, k: usize) -> bool {
             .take(k)
             .collect();
 
-    samples.iter().find(|&a| miller_rabin(a, n, s, &d)).is_none()
+    samples
+        .iter()
+        .find(|&a| miller_rabin(a, n, s, &d))
+        .is_none()
 }

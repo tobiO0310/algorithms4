@@ -1,6 +1,9 @@
 use rand::{RngExt, rng};
 
-use crate::{strings::{ASCII_SIZE, char_at}, utilities::is_prime};
+use crate::{
+    strings::{ASCII_SIZE, char_at},
+    utilities::is_prime,
+};
 
 /// Holds different implementations of searching for the first occurrence of a substring within a string,
 /// and getting the index of the start (of said substring in the aforementioned string).
