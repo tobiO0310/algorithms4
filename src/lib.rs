@@ -7,9 +7,11 @@ pub mod collections;
 pub mod graphs;
 pub mod searching;
 pub mod sorting;
+pub mod strings;
 pub mod union_find;
 mod utilities;
 
 pub use searching::*;
 pub use sorting::*;
 pub use union_find::*;
+pub use utilities::is_prime;

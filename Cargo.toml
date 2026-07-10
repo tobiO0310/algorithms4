@@ -11,6 +11,8 @@ repository = "https://github.com/tobiO0310/algorithms4"
 keywords = ["algorithms", "algs4"]
 
 [dependencies]
+num = "0.4.3"
+num-bigint = {version = "0.5.1", features = ["rand_0_10"]}
 rand = "0.10.1"
 
 [profile.release]
