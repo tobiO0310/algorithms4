@@ -9,6 +9,7 @@ pub struct SubstringSearch;
 const R: usize = ASCII_SIZE;
 
 /// A built pattern used for [SubstringSearch::kmp].
+#[must_use = "building the pattern does not evaluate it"]
 pub struct KMPPattern {
     m: usize,
     dfa: Vec<Vec<usize>>,
@@ -40,6 +41,7 @@ impl KMPPattern {
 }
 
 /// A built pattern used for [SubstringSearch::bm].
+#[must_use = "building the pattern does not evaluate it"]
 pub struct BoyerMoorePattern {
     right: Vec<isize>,
     pattern: String,
@@ -59,6 +61,7 @@ impl BoyerMoorePattern {
 }
 
 /// A built pattern used for [SubstringSearch::rk].
+#[must_use = "building the pattern does not evaluate it"]
 pub struct RabinKarp {
     pattern: String,
     pat_hash: u64,
@@ -127,6 +130,7 @@ impl SubstringSearch {
     ///
     /// Returns the length of the first occurrence of a substring equaling `pat` within `txt`,
     /// if none exist will return length of `txt`.
+    #[must_use]
     pub fn brute_force(pat: &str, txt: &str) -> usize {
         let m = pat.len();
         let n = txt.len();
@@ -153,6 +157,7 @@ impl SubstringSearch {
     ///
     /// Returns the length of the first occurrence of a substring equaling `pat` within `txt`,
     /// if none exist will return length of `txt`.
+    #[must_use]
     pub fn kmp(pat: &KMPPattern, txt: &str) -> usize {
         let (mut i, mut j, n) = (0, 0, txt.len());
         while i < n && j < pat.m {
@@ -167,6 +172,7 @@ impl SubstringSearch {
     ///
     /// Returns the length of the first occurrence of a substring equaling `pat` within `txt`,
     /// if none exist will return length of `txt`.
+    #[must_use]
     pub fn bm(pat: &BoyerMoorePattern, txt: &str) -> usize {
         let (n, m) = (txt.len(), pat.pattern.len());
         let mut skip;
@@ -192,6 +198,7 @@ impl SubstringSearch {
     ///
     /// Returns the length of the first occurrence of a substring equaling `pat` within `txt`,
     /// if none exist will return length of `txt`.
+    #[must_use]
     pub fn rk(pat: &RabinKarp, txt: &str) -> usize {
         let txt_len = txt.len();
         let pat_len = pat.pattern.len();

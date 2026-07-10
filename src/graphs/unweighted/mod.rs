@@ -91,6 +91,37 @@ impl DFSResult {
     }
 }
 
+/// The result from running [dfs_mul]
+#[must_use = "Running Depth-First-Search without using the result is meaningless"]
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DFSMultResult(Vec<bool>, Vec<usize>, usize);
+
+impl DFSMultResult {
+    /// The marked array
+    #[must_use]
+    pub fn marked(&self) -> &Vec<bool> {
+        &self.0
+    }
+
+    /// The start of the DFS.
+    #[must_use]
+    pub fn starts(&self) -> &Vec<usize> {
+        &self.1
+    }
+
+    /// The amount of vertices reachable from *start*.
+    #[must_use]
+    pub fn amount(&self) -> usize {
+        self.2
+    }
+
+    /// Indicates whether *w* is reachable from *start* via traversal in the graph.
+    #[must_use]
+    pub fn has_path_to(&self, w: usize) -> bool {
+        self.0.get(w).is_some_and(|&v| v)
+    }
+}
+
 /// Runs Depth-First-Search on a [Graph], starting at *start*.
 ///
 /// # Panics
@@ -115,6 +146,36 @@ pub fn dfs<T: Graph>(graph: &T, start: usize) -> DFSResult {
     }
 
     DFSResult(marked, start, count)
+}
+
+/// Runs Depth-First-Search on a [Graph], starting at all *starts*.
+///
+/// # Panics
+///
+/// Panics if *start* is bigger than or equal to vertex amount in graph
+pub fn dfs_mul<T: Graph>(
+    graph: &T,
+    starts: impl Iterator<Item = usize>,
+) -> DFSMultResult {
+    let mut marked = vec![false; graph.vertices()];
+    let mut count = 0;
+    let mut start_vertices = Vec::new();
+    for start in starts {
+        start_vertices.push(start);
+        let mut stack = Vec::new();
+        stack.push(start);
+        while let Some(v) = stack.pop() {
+            count += 1;
+            marked[v] = true;
+            for w in graph.adjacent(v) {
+                if !marked[w] {
+                    stack.push(w);
+                }
+            }
+        }
+    }
+
+    DFSMultResult(marked, start_vertices, count)
 }
 
 /// The result from running [bfs].

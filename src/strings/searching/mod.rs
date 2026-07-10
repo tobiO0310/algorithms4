@@ -1,8 +1,10 @@
 use crate::SymbolTable;
 
+mod regex;
 mod substring;
 mod ternary;
 mod tries;
+pub use regex::{RegExpNFA, RegularExpressionErrors};
 pub use substring::{
     BoyerMoorePattern, KMPPattern, RabinKarp, SubstringSearch,
 };

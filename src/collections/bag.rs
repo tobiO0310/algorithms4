@@ -66,6 +66,15 @@ impl<T> IntoIterator for Bag<T> {
     }
 }
 
+impl<'a, T> IntoIterator for &'a Bag<T> {
+    type Item = &'a T;
+    type IntoIter = linked_list::Iter<'a, T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.data.iter()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
