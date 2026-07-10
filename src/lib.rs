@@ -14,3 +14,4 @@ mod utilities;
 pub use searching::*;
 pub use sorting::*;
 pub use union_find::*;
+pub use utilities::is_prime;

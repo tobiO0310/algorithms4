@@ -1,6 +1,6 @@
 use rand::{RngExt, rng};
 
-use crate::strings::{ASCII_SIZE, char_at};
+use crate::{strings::{ASCII_SIZE, char_at}, utilities::is_prime};
 
 /// Holds different implementations of searching for the first occurrence of a substring within a string,
 /// and getting the index of the start (of said substring in the aforementioned string).
@@ -78,7 +78,7 @@ fn gen_prime() -> u32 {
         num |= 1 << 30; // make sure it is actually 31-bit.
         num |= 1; // make sure it's odd
 
-        if miller_rabin::is_prime(&num, 16) {
+        if is_prime(&num, 16) {
             return num;
         }
     }
